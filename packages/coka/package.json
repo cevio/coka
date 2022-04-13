@@ -1,0 +1,39 @@
+{
+  "name": "@drakejs/coka",
+  "version": "1.0.0",
+  "description": "react web framework:coka",
+  "author": "shenyunjie ",
+  "homepage": "https://github.com/cevio/drake/tree/master/packages/coka",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "keywords": [
+    "npm"
+  ],
+  "directories": {
+    "lib": "src"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rm -rf ./dist && tsc"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.35",
+    "@types/react": "^18.0.1",
+    "@types/react-dom": "^18.0.0",
+    "@types/reflect-metadata": "^0.1.0",
+    "@types/url-parse": "^1.4.3"
+  },
+  "dependencies": {
+    "inversify": "^6.0.1",
+    "mitt": "^3.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "reflect-metadata": "^0.1.13",
+    "url-parse": "^1.5.1"
+  }
+}
