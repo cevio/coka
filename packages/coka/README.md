@@ -1,11 +1,9 @@
-# `@nppm/coka`
+# @coka/coka
 
-  > TODO: description
-  
-  ## Usage
-  
-  ```
-  const container = require('@nppm/coka');
-  
-  // TODO: DEMONSTRATE API
-  ```
+A javascript framework for building user interfaces with react 18
+
+## Usage
+
+```bash
+$ npm i @coka/coka
+```
