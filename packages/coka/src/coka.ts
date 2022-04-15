@@ -37,23 +37,8 @@ export const RequestContext = createContext<TRequest>(null);
 
 const e = mitt();
 
-export const redirect = (url: string, params?: Record<string, string | number | boolean>, hash?: string) => {
-  const obj = new URL(url, true);
-  obj.set('protocol', '');
-  obj.set('host', '');
-  obj.set('query', params);
-  obj.set('hash', hash);
-  e.emit('redirect', obj.toString());
-}
-
-export const replace = (url: string, params?: Record<string, string | number | boolean>, hash?: string) => {
-  const obj = new URL(url, true);
-  obj.set('protocol', '');
-  obj.set('host', '');
-  obj.set('query', params);
-  obj.set('hash', hash);
-  e.emit('replace', obj.toString());
-}
+export const redirect = (url: string) => e.emit('redirect', url);
+export const replace = (url: string) => e.emit('replace', url);
 
 export function createServer(mode: THistoryMode) {
   if (mode === 'popstate') {

@@ -1,3 +1,4 @@
+import URL from 'url-parse';
 import { injectable, interfaces } from 'inversify';
 import { FunctionComponent, useMemo } from 'react';
 import { TRequest, redirect, replace } from './coka';
@@ -19,12 +20,22 @@ export class Component {
     return useWidget(clazz);
   }
 
-  public redirect(...args: Parameters<typeof redirect>) {
-    return redirect(...args);
+  public redirect(url: string, params?: Record<string, string | number | boolean>, hash?: string) {
+    const obj = new URL(url, true);
+    obj.set('protocol', '');
+    obj.set('host', '');
+    obj.set('query', params);
+    obj.set('hash', hash);
+    return redirect(obj.toString());
   }
 
-  public replace(...args: Parameters<typeof replace>) {
-    return replace(...args);
+  public replace(url: string, params?: Record<string, string | number | boolean>, hash?: string) {
+    const obj = new URL(url, true);
+    obj.set('protocol', '');
+    obj.set('host', '');
+    obj.set('query', params);
+    obj.set('hash', hash);
+    return replace(obj.toString());
   }
 
   public useParam(...args: Parameters<typeof useParam>) {

@@ -8,11 +8,9 @@ import { Widget } from '../component';
  */
 export function AnnotationDependenciesAutoRegister<T extends Widget>(clazz: interfaces.Newable<T>, container?: Container) {
   if (typeof clazz !== 'function' || !clazz.prototype) return;
-  const rollbacks: (() => void)[] = [];
   const injectable = Reflect.hasMetadata(METADATA_KEY.PARAM_TYPES, clazz);
   if (injectable && container && !container.isBound(clazz)) {
     container.bind(clazz).toSelf().inSingletonScope();
-    rollbacks.push(() => container.unbind(clazz));
     const propsInjectable = Reflect.hasMetadata(METADATA_KEY.TAGGED_PROP, clazz);
     if (propsInjectable) {
       const props = Reflect.getMetadata(METADATA_KEY.TAGGED_PROP, clazz);
@@ -22,15 +20,11 @@ export function AnnotationDependenciesAutoRegister<T extends Widget>(clazz: inte
           for (let i = 0; i < chunks.length; i++) {
             const chunk = chunks[i];
             if (chunk.key === 'inject') {
-              rollbacks.push(AnnotationDependenciesAutoRegister(chunk.value, container));
+              AnnotationDependenciesAutoRegister(chunk.value, container)
             }
           }
         }
       }
     }
-  }
-  return () => {
-    let i = rollbacks.length;
-    while (i--) rollbacks[i]();
   }
 }

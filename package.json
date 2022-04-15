@@ -3,7 +3,7 @@
   "description": "a javascript framework for building user interfaces with react 18",
   "private": true,
   "scripts": {
-    "push": "npm run docs:build && lerna run build && git add . && git commit -am 'update' && git push && lerna publish",
+    "push": "lerna run build && git add . && git commit -am 'update' && git push && lerna publish",
     "create": "node scripts/create.js",
     "build": "lerna run build",
     "dev": "vite"
