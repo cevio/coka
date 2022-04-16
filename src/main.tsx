@@ -1,9 +1,10 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { inject, injectable } from 'inversify';
-import { createServer, Component, widget, Widget, container, middleware, redirect, TRequest, memo } from '@coka/coka';
+import { createServer, Component, widget, Widget, container, middleware, redirect, TRequest, memo, CokaHashChangeMode } from '@coka/coka';
 
-const { Browser, createPathRule, use } = createServer('hashchange');
+const app = createRoot(document.getElementById('root'));
+const { Browser, createPathRule, use } = createServer(CokaHashChangeMode);
 
 container.bind('xxx').toConstantValue(3);
 
@@ -35,7 +36,7 @@ class abc extends Component implements Widget<{ abc: number }> {
 
   @memo
   public render(props: { abc: number }) {
-    return <div onClick={() => redirect('/222', { t: Date.now() })}>
+    return <div onClick={() => this.redirect('/222', { t: Date.now() })}>
       {props.abc}
       <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
       <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
@@ -60,11 +61,10 @@ use(ggg, { x: 1 })
 use(ggg, { x: 2 })
 
 createPathRule('/', abc);
-createPathRule('/222', () => <div onClick={() => redirect('/', { t: Date.now() }, 'test')}>
+createPathRule('/222', () => <div onClick={() => redirect('/?t=' + Date.now())}>
   aaa
 </div>);
 
-const app = createRoot(document.getElementById('root'));
 app.render(<Browser>
   <div>not found</div>
 </Browser>);

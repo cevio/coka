@@ -15,10 +15,9 @@ export interface Widget<P = any> extends Component {
 export class Component {
   public readonly usePath = usePath;
   public readonly useHash = useHash;
-  
-  public useWidget<P = {}>(clazz: interfaces.Newable<Widget<P>>) {
-    return useWidget(clazz);
-  }
+  public readonly useWidget = useWidget;
+  public readonly useParam = useParam; 
+  public readonly useQuery = useQuery;
 
   public redirect(url: string, params?: Record<string, string | number | boolean>, hash?: string) {
     const obj = new URL(url, true);
@@ -36,14 +35,6 @@ export class Component {
     obj.set('query', params);
     obj.set('hash', hash);
     return replace(obj.toString());
-  }
-
-  public useParam(...args: Parameters<typeof useParam>) {
-    return useParam(...args);
-  }
-
-  public useQuery(...args: Parameters<typeof useQuery>) {
-    return useQuery(...args);
   }
 }
 

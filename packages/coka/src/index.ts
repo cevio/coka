@@ -6,6 +6,9 @@ export * from './router';
 export * from './component';
 export * from './decorators';
 export * from './hooks';
+export * from './popstate';
+export * from './hashchange';
+export * from './types';
 
 export {
   inject,

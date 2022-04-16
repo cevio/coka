@@ -1,6 +1,8 @@
 import URL from 'url-parse';
 import mitt from 'mitt';
 import { Router } from './router';
+import { Widget } from './component';
+import { TCokaMode } from './types';
 import { Container, interfaces } from 'inversify';
 import { TComponent, isWidget } from './component';
 import { 
@@ -23,9 +25,9 @@ import {
   FunctionComponentElement,
   PropsWithoutRef
 } from 'react';
-import { Widget } from '.';
 
-export type THistoryMode = 'hashchange' | 'popstate';
+const e = mitt();
+
 export interface TRequest {
   hash: string,
   pathname: string,
@@ -34,30 +36,23 @@ export interface TRequest {
 }
 export const container = new Container();
 export const RequestContext = createContext<TRequest>(null);
-
-const e = mitt();
-
 export const redirect = (url: string) => e.emit('redirect', url);
 export const replace = (url: string) => e.emit('replace', url);
 
-export function createServer(mode: THistoryMode) {
-  if (mode === 'popstate') {
-    if (!window.history.pushState || window.location.protocol.toLowerCase().indexOf('file:') === 0) {
-      mode = 'hashchange';
-    }
-  }
-
-  const formatHash = (hash?: string) => {
-    if (!hash) return '/';
-    return hash.startsWith('#') ? hash.substring(1) : hash;
-  }
-
+export function createServer<T extends TCokaMode>(cokaMode: interfaces.Newable<T>) {
+  const mode = new cokaMode();
   const router = new Router({
     maxParamLength: +Infinity,
     caseSensitive: true,
     ignoreTrailingSlash: true,
   })
 
+  /**
+   * 通用组件
+   * 一般用于SSR渲染
+   * @param props 
+   * @returns 
+   */
   const Application = (props: PropsWithChildren<{ href: string }>) => {
     const object = useMemo(() => {
       const url = new URL(props.href || '/', true);
@@ -78,18 +73,23 @@ export function createServer(mode: THistoryMode) {
     return createElement(RequestContext.Provider, { value: object.state }, object.children);
   }
 
+  /**
+   * Web端页面组件
+   * @param props 
+   * @returns 
+   */
   const Browser = (props: PropsWithChildren<{}>) => {
     const [href, setHref] = useState<string>(null);
     const _href = useDeferredValue(href);
     useEffect(() => {
-      const handler = () => setHref(mode === 'hashchange' ? formatHash(window.location.hash) : window.location.href);
+      const handler = () => setHref(mode.getURL());
       const _handler = () => e.emit('change');
+      const feedback = mode.listen(_handler);
       e.on('change', handler);
-      window.addEventListener(mode, _handler);
       handler();
       return () => {
         e.off('change', handler);
-        window.removeEventListener(mode, _handler);
+        feedback();
       }
     }, []);
     return createElement(Application, { href: _href }, props.children);
@@ -136,36 +136,8 @@ export function createServer(mode: THistoryMode) {
     createPathRule(Reflect.getMetadata(ControllerMetadataNameSpace, clazz), clazz);
   }
 
-  const replaceHash = (path: string) => {
-    const i = window.location.href.indexOf('#');
-    window.location.replace(
-      window.location.href.slice(0, i >= 0 ? i : 0) + '#' + path
-    )
-  }
-
-  e.on('redirect', (url: string,  title: string = window.document.title) => {
-    switch (mode) {
-      case 'hashchange':
-        window.location.hash = url;
-        break;
-      case 'popstate':
-        window.history.pushState(null, title, url);
-        e.emit('change');
-        break;
-    }
-  })
-
-  e.on('replace', (url: string, title: string = window.document.title) => {
-    switch (mode) {
-      case 'hashchange':
-        replaceHash(url);
-        break;
-      case 'popstate':
-        window.history.replaceState(null, title, url);
-        e.emit('change');
-        break;
-    }
-  })
+  e.on('redirect', (url: string, title: string = window.document.title) => mode.redirect(url, title, () => e.emit('change')));
+  e.on('replace', (url: string, title: string = window.document.title) => mode?.replace(url, title, () => e.emit('change')));
 
   return {
     use,
