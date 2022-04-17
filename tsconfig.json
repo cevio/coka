@@ -23,6 +23,6 @@
       "@coka/coka": ["packages/coka/src"]
     }
   },
-  "include": ["packages/", "src"],
+  "include": ["packages/", "src", "server"],
   "exclude": ["node_modules"]
 }

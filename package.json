@@ -6,7 +6,10 @@
     "push": "lerna run build && git add . && git commit -am 'update' && git push && lerna publish",
     "create": "node scripts/create.js",
     "build": "lerna run build",
-    "dev": "vite"
+    "dev": "vite",
+    "link": "node scripts/link",
+    "assets": "vite build",
+    "serve": "ts-node ./server/index.tsx"
   },
   "devDependencies": {
     "@vitejs/plugin-react-refresh": "^1.3.6",

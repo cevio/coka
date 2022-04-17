@@ -39,8 +39,8 @@ export const RequestContext = createContext<TRequest>(null);
 export const redirect = (url: string) => e.emit('redirect', url);
 export const replace = (url: string) => e.emit('replace', url);
 
-export function createServer<T extends TCokaMode>(cokaMode: interfaces.Newable<T>) {
-  const mode = new cokaMode();
+export function createServer<T extends TCokaMode>(cokaMode?: interfaces.Newable<T>) {
+  const mode = cokaMode ? new cokaMode() : null;
   const router = new Router({
     maxParamLength: +Infinity,
     caseSensitive: true,
@@ -82,14 +82,16 @@ export function createServer<T extends TCokaMode>(cokaMode: interfaces.Newable<T
     const [href, setHref] = useState<string>(null);
     const _href = useDeferredValue(href);
     useEffect(() => {
-      const handler = () => setHref(mode.getURL());
-      const _handler = () => e.emit('change');
-      const feedback = mode.listen(_handler);
-      e.on('change', handler);
-      handler();
-      return () => {
-        e.off('change', handler);
-        feedback();
+      if (mode) {
+        const handler = () => setHref(mode.getURL());
+        const _handler = () => e.emit('change');
+        const feedback = mode.listen(_handler);
+        e.on('change', handler);
+        handler();
+        return () => {
+          e.off('change', handler);
+          feedback();
+        }
       }
     }, []);
     return createElement(Application, { href: _href }, props.children);
@@ -136,8 +138,10 @@ export function createServer<T extends TCokaMode>(cokaMode: interfaces.Newable<T
     createPathRule(Reflect.getMetadata(ControllerMetadataNameSpace, clazz), clazz);
   }
 
-  e.on('redirect', (url: string, title: string = window.document.title) => mode.redirect(url, title, () => e.emit('change')));
-  e.on('replace', (url: string, title: string = window.document.title) => mode?.replace(url, title, () => e.emit('change')));
+  if (mode) {
+    e.on('redirect', (url: string, title: string = window.document.title) => mode.redirect(url, title, () => e.emit('change')));
+    e.on('replace', (url: string, title: string = window.document.title) => mode?.replace(url, title, () => e.emit('change')));
+  }
 
   return {
     use,
