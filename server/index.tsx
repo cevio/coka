@@ -2,11 +2,11 @@ import React from 'react';
 import { createServer as createHttpServer } from 'http';
 import { renderToPipeableStream } from 'react-dom/server';
 // import { DemoExample } from '../src/comp';
-import { createServer, CokaServerContext, CokaServerProvider, dynamic } from '../packages/coka/src';
+import { createServer, CokaServerContext, CokaServerProvider, loadController } from '../packages/coka/src';
 
 createHttpServer((req, res) => {
   const { createPathRule, Application } = createServer();
-  createPathRule('/', dynamic(() => import('../src/comp'), <span style={{ color: 'red' }}>loading</span>));
+  createPathRule('/', loadController(() => import('../src/comp'), <span style={{ color: 'red' }}>loading</span>));
   const context = new CokaServerContext();
   const stream = renderToPipeableStream(
     <html>

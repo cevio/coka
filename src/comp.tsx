@@ -1,8 +1,8 @@
 import React, { lazy, Suspense, useId } from 'react';
 import { injectable } from 'inversify';
-import { Component, widget, Widget, TRequest, memo, controller, useCokaEffect } from '../packages/coka/src';
+import { Component, widget, Widget, TRequest, memo, controller, useCokaEffect, dynamic } from '../packages/coka/src';
 
-const Mathic = lazy(() => import('./math'));
+const Mathic = dynamic(() => import('./math'));
 
 @widget
 @injectable()
