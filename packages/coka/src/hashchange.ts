@@ -7,7 +7,7 @@ export class CokaHashChangeMode implements TCokaMode {
   }
 
   public getURL(): string {
-    return this.format(window.location.hash);
+    return window.location.origin + this.format(window.location.hash);
   }
 
   public listen(callback: () => void) {

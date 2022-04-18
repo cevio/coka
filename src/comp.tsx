@@ -22,7 +22,7 @@ export default class DemoExample extends Component implements Widget<TRequest> {
     }), []);
     const abc = Number(props.query.a || '0') + 100
     const _data = data || [];
-    return <div onClick={() => this.redirect('/222', { t: Date.now() })}>
+    return <div onClick={() => this.redirect('/222', { t: Date.now() + '' })}>
       {abc} + [{id}]
       <Mathic x={100} />
       <hr />

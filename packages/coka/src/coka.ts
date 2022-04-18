@@ -1,4 +1,3 @@
-import { parse, UrlWithParsedQuery } from 'url';
 import mitt from 'mitt';
 import { Router } from './router';
 import { Widget } from './component';
@@ -30,7 +29,7 @@ const e = mitt();
 export interface TRequest {
   hash: string,
   pathname: string,
-  query: UrlWithParsedQuery['query'],
+  query: Record<string, string>,
   params: Record<string, string>,
 }
 export const container = new Container();
@@ -54,12 +53,15 @@ export function createServer<T extends TCokaMode>(cokaMode?: interfaces.Newable<
    */
   const Application = (props: PropsWithChildren<{ href: string }>) => {
     const object = useMemo(() => {
-      const url = parse(props.href || '/', true);
+      if (!props.href) return { state: null, children: null };
+      const url = new URL(props.href);
+      const query: Record<string, string> = {};
+      for (const [key, value] of url.searchParams.entries()) query[key] = value
       const matched = router.find(url.pathname);
       const state: TRequest = {
         hash: url.hash,
         pathname: url.pathname,
-        query: url.query,
+        query: query,
         params: matched ? matched.params : {},
       }
       return {

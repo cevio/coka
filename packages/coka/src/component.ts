@@ -1,4 +1,3 @@
-import { parse, format, UrlWithParsedQuery } from 'url';
 import { injectable, interfaces } from 'inversify';
 import { FunctionComponent, useMemo } from 'react';
 import { redirect, replace } from './coka';
@@ -18,18 +17,18 @@ export class Component {
   public readonly useParam = useParam; 
   public readonly useQuery = useQuery;
 
-  public redirect(url: string, params?: UrlWithParsedQuery['query'], hash?: string) {
-    const obj = parse(url, true);
-    obj.query = params;
+  public redirect(url: string, params?: Record<string, string>, hash?: string) {
+    const obj = new URL(url, window.location.origin);
+    obj.search = params ? new URLSearchParams(params).toString() : undefined;
     obj.hash = hash;
-    return redirect(format(obj));
+    return redirect(obj.toString());
   }
 
-  public replace(url: string, params?: UrlWithParsedQuery['query'], hash?: string) {
-    const obj = parse(url, true);
-    obj.query = params;
+  public replace(url: string, params?: Record<string, string>, hash?: string) {
+    const obj = new URL(url, window.location.origin);
+    obj.search = params ? new URLSearchParams(params).toString() : undefined;
     obj.hash = hash;
-    return replace(format(obj));
+    return replace(obj.toString());
   }
 }
 

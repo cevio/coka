@@ -8,12 +8,13 @@ createHttpServer((req, res) => {
   const { createPathRule, Application } = createServer();
   createPathRule('/', dynamic(() => import('../src/comp'), <span style={{ color: 'red' }}>loading</span>));
   const context = new CokaServerContext();
+  const url = 'http://localhost' + req.url;
   const stream = renderToPipeableStream(
     <html>
       <title>ssr</title>
       <body>
         <CokaServerProvider.Provider value={context}>
-          <Application href={req.url}>404 Not Found</Application>
+          <Application href={url}>404 Not Found</Application>
         </CokaServerProvider.Provider>
       </body>
     </html>
