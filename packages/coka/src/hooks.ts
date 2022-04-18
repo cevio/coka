@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import { RequestContext } from './coka';
 
-export function useQuery<T>(key: string, format?: (v: string) => T) {
+export function useQuery<T>(key: string, format?: (v: string | string[]) => T) {
   const request = useContext(RequestContext);
   const value = request.query[key];
   return format ? format(value) : value;
