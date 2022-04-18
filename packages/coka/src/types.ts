@@ -1,5 +1,3 @@
-import { Emitter, EventType } from "mitt";
-
 export interface TCokaMode  {
   getURL(): string;
   listen(callback: () => void): () => void;

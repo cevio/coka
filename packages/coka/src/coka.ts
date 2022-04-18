@@ -7,7 +7,6 @@ import { Container, interfaces } from 'inversify';
 import { TComponent, isWidget } from './component';
 import { 
   widgetRenderMetadataNameSpace, 
-  widgetControllerMetadataNameSpace, 
   ControllerMetadataNameSpace, 
   transformComponent, 
   TUseWidgetState, 
@@ -117,11 +116,8 @@ export function createServer<T extends TCokaMode>(cokaMode?: interfaces.Newable<
     if (isWidgetComponent && !Reflect.hasMetadata(widgetRenderMetadataNameSpace, cmp)) {
       throw new Error('target is not a IOC component');
     }
-    if (isWidgetComponent && !Reflect.hasMetadata(widgetControllerMetadataNameSpace, cmp)) {
-      throw new Error('target miss initialize method');
-    }
     let component: FunctionComponent = isWidgetComponent
-      ? Reflect.getMetadata(widgetControllerMetadataNameSpace, cmp)
+      ? Reflect.getMetadata(widgetRenderMetadataNameSpace, cmp)
       : cmp as FunctionComponent;
     if (Reflect.hasMetadata(MiddlewareMetadataNameSpace, cmp)) {
       const component_middlewares: TUseWidgetState[] = Reflect.getMetadata(MiddlewareMetadataNameSpace, cmp);

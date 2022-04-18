@@ -2,7 +2,7 @@ import URL from 'url-parse';
 import { injectable, interfaces } from 'inversify';
 import { FunctionComponent, useMemo } from 'react';
 import { TRequest, redirect, replace } from './coka';
-import { widgetRenderMetadataNameSpace, widgetControllerMetadataNameSpace } from './decorators';
+import { widgetRenderMetadataNameSpace } from './decorators';
 import { useHash, useParam, usePath, useQuery } from './hooks';
 
 export type TComponent<P = any> = interfaces.Newable<Widget<P>> | FunctionComponent<P>;
@@ -56,16 +56,10 @@ export function useWidget<P = {}>(clazz: interfaces.Newable<Widget<P>>) {
   }, [clazz]);
 }
 
-export function transformWidget<P>(clazz: any, control?: boolean): FunctionComponent<P> {
+export function transformWidget<P>(clazz: any): FunctionComponent<P> {
   if (!isWidget(clazz)) return clazz as FunctionComponent<P>;
   if (!Reflect.hasMetadata(widgetRenderMetadataNameSpace, clazz)) {
     throw new Error('target is not a IOC widget');
-  }
-  if (control) {
-    if (!Reflect.hasMetadata(widgetControllerMetadataNameSpace, clazz)) {
-      throw new Error('target miss initialize method');
-    }
-    return Reflect.getMetadata(widgetControllerMetadataNameSpace, clazz) as FunctionComponent<P>
   }
   return Reflect.getMetadata(widgetRenderMetadataNameSpace, clazz) as FunctionComponent<P>
 }

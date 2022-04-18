@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useId } from 'react';
+import React, { useId } from 'react';
 import { injectable } from 'inversify';
 import { Component, widget, Widget, TRequest, memo, controller, useCokaEffect, dynamic } from '../packages/coka/src';
 
@@ -7,8 +7,10 @@ const Mathic = dynamic(() => import('./math'));
 @widget
 @injectable()
 @controller()
-export default class DemoExample extends Component implements Widget<{ abc: number }> {
-  public initialize(props: TRequest) {
+export default class DemoExample extends Component implements Widget<TRequest> {
+  @memo
+  public render(props: TRequest) {
+    const id = useId();
     const [data] = useCokaEffect(() => new Promise<string[]>(resolve => {
       setTimeout(() => {
         resolve([
@@ -18,19 +20,11 @@ export default class DemoExample extends Component implements Widget<{ abc: numb
         ])
       }, 2000);
     }), []);
-    return {
-      abc: Number(props.query.a || '0') + 100,
-      data
-    }
-  }
-
-  @memo
-  public render(props: { abc: number, data: string[] }) {
-    const id = useId();
-    const _data = props.data || [];
+    const abc = Number(props.query.a || '0') + 100
+    const _data = data || [];
     return <div onClick={() => this.redirect('/222', { t: Date.now() })}>
-      {props.abc} + [{id}]
-      <Suspense fallback="loading"><Mathic x={100} /></Suspense>
+      {abc} + [{id}]
+      <Mathic x={100} />
       <hr />
       {
         _data.map(d => <p key={d}>{d}</p>)

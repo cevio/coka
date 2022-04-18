@@ -1,13 +1,12 @@
-import React, { FunctionComponent, createElement, PropsWithChildren, ForwardRefRenderFunction } from 'react';
+import React, { FunctionComponent } from 'react';
 import { interfaces } from 'inversify';
 import { Widget, isWidget } from '../component';
-import { container, TRequest } from '../coka';
+import { container } from '../coka';
 import { AnnotationDependenciesAutoRegister } from './auto';
 import { MemoDecoratorNameSpace } from './memo';
 import { ForwardRefDecoratorNameSpace } from './forward';
 
 export const widgetRenderMetadataNameSpace = 'widget:render';
-export const widgetControllerMetadataNameSpace = 'widget:controller';
 
 /**
  * 组件注解
@@ -25,11 +24,4 @@ export const widget = <P = {}>(target: interfaces.Newable<Widget<P>>) => {
   if (isForwardRef) widgetRender = React.forwardRef(widgetRender as any) as FunctionComponent<P>;
   if (isMemo) widgetRender = React.memo(widgetRender) as FunctionComponent<P>;
   Reflect.defineMetadata(widgetRenderMetadataNameSpace, widgetRender, target);
-  if (typeof widget.initialize === 'function') {
-    const controllerRender = (request: PropsWithChildren<TRequest>) => {
-      const props = widget.initialize(request);
-      return createElement(widgetRender, props);
-    }
-    Reflect.defineMetadata(widgetControllerMetadataNameSpace, controllerRender, target);
-  }
 }
