@@ -1,14 +1,13 @@
 import URL from 'url-parse';
 import { injectable, interfaces } from 'inversify';
 import { FunctionComponent, useMemo } from 'react';
-import { TRequest, redirect, replace } from './coka';
+import { redirect, replace } from './coka';
 import { widgetRenderMetadataNameSpace } from './decorators';
 import { useHash, useParam, usePath, useQuery } from './hooks';
 
 export type TComponent<P = any> = interfaces.Newable<Widget<P>> | FunctionComponent<P>;
 export interface Widget<P = any> extends Component {
   readonly render: FunctionComponent<P>,
-  readonly initialize?: (props: TRequest) => P,
 }
 
 @injectable()

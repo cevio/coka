@@ -2,7 +2,7 @@ import React, { useId } from 'react';
 import { injectable } from 'inversify';
 import { Component, widget, Widget, TRequest, memo, controller, useCokaEffect, dynamic } from '../packages/coka/src';
 
-const Mathic = dynamic(() => import('./math'));
+const Mathic = dynamic(() => import('./math'), <span>loading...</span>);
 
 @widget
 @injectable()
