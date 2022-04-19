@@ -1,5 +1,6 @@
-import React, { createContext, DependencyList, startTransition, useCallback, useContext, useEffect, useId, useState } from 'react';
+import React, { createContext, DependencyList, startTransition, useContext, useEffect, useId, useState } from 'react';
 import { TCokaServerProviderState } from './types';
+import { useAsync } from 'react-async-hook';
 
 export const CokaServerProvider = createContext<CokaServerContext>(null);
 export class CokaServerContext extends Map<string, TCokaServerProviderState> {
@@ -44,36 +45,13 @@ export class CokaServerContext extends Map<string, TCokaServerProviderState> {
   }
 }
 
-export function useCokaEffect<T extends DependencyList, O = any>(fn: (...args: T) => Promise<O>, deps: T) {
+export function useCokaEffect<T extends any[], O = any>(fn: (...args: T) => Promise<O>, deps: T) {
   const ctx = useContext(CokaServerProvider);
   if (!!ctx) return createServerEffect(ctx, () => fn(...deps));
-  const [state, setState] = useState<O>(null);
-  const [error, setError] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
-  useEffect(() => {
-    let unmounted = false;
-    setLoading(true);
-    fn(...deps).then(res => {
-      if (unmounted) return;
-      startTransition(() => {
-        setState(res);
-        setLoading(false);
-      })
-    }).catch(e => {
-      if (unmounted) return;
-      startTransition(() => {
-        setError(e);
-        setLoading(false);
-      })
-    })
-    return () => {
-      unmounted = true;
-    }
-  }, deps);
+  const { result, ...extra } = useAsync(fn, deps);
   return {
-    data: state,
-    error,
-    loading
+    data: result,
+    ...extra
   }
 }
 
