@@ -9,6 +9,11 @@ export interface Widget<P = any> extends Component {
   readonly render: FunctionComponent<P>,
 }
 
+export function encodeURLPathParams(url: string, params?: Record<string, string>, hash?: string) {
+  const search = (params ? new URLSearchParams(params).toString() : undefined) || '';
+  return url + (search ? '?' + search : '') + (hash ? '#' + hash : '');
+}
+
 @injectable()
 export class Component {
   public readonly usePath = usePath;
@@ -18,17 +23,11 @@ export class Component {
   public readonly useQuery = useQuery;
 
   public redirect(url: string, params?: Record<string, string>, hash?: string) {
-    const obj = new URL(url, window.location.origin);
-    obj.search = params ? new URLSearchParams(params).toString() : undefined;
-    obj.hash = hash;
-    return redirect(obj.toString());
+    return redirect(encodeURLPathParams(url, params, hash));
   }
 
   public replace(url: string, params?: Record<string, string>, hash?: string) {
-    const obj = new URL(url, window.location.origin);
-    obj.search = params ? new URLSearchParams(params).toString() : undefined;
-    obj.hash = hash;
-    return replace(obj.toString());
+    return replace(encodeURLPathParams(url, params, hash));
   }
 }
 
