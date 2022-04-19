@@ -1,9 +1,9 @@
-import React, { createContext, DependencyList, useCallback, useContext, useEffect, useId, useState } from 'react';
+import React, { createContext, DependencyList, startTransition, useCallback, useContext, useEffect, useId, useState } from 'react';
 import { TCokaServerProviderState } from './types';
 
 export const CokaServerProvider = createContext<CokaServerContext>(null);
 export class CokaServerContext extends Map<string, TCokaServerProviderState> {
-  public createServerProvider<T = any>(namespace: string): (fn: () => Promise<T>) => readonly [T, any] {
+  public createServerProvider<T = any>(namespace: string): (fn: () => Promise<T>) => { data: T, error?: any, loading?: boolean } {
     if (!this.has(namespace)) {
       this.set(namespace, this.createDefaultState<T>());
     }
@@ -15,7 +15,10 @@ export class CokaServerContext extends Map<string, TCokaServerProviderState> {
           state.p = fn().then(this.createResolve(state)).catch(this.createReject(state));
           throw state.p;
         case 1: throw state.p;
-        default: return [state.r, state.e] as const;
+        default: return {
+          data: state.r,
+          error: state.e,
+        };
       }
     }
   }
@@ -47,10 +50,32 @@ export function useCokaEffect<T extends DependencyList, O = any>(fn: (...args: T
   if (!!ctx) return createServerEffect(ctx, callback);
   const [state, setState] = useState<O>(null);
   const [error, setError] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
-    callback().then(setState).catch(setError);
-  }, [callback]);
-  return [state, error] as const;
+    let unmounted = false;
+    setLoading(true);
+    callback().then(res => {
+      if (unmounted) return;
+      startTransition(() => {
+        setState(res);
+        setLoading(false);
+      })
+    }).catch(e => {
+      if (unmounted) return;
+      startTransition(() => {
+        setError(e);
+        setLoading(false);
+      })
+    })
+    return () => {
+      unmounted = true;
+    }
+  }, [deps]);
+  return {
+    data: state,
+    error,
+    loading
+  }
 }
 
 function createServerEffect<O = any>(ctx: CokaServerContext, callback: () => Promise<O>) {
