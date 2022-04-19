@@ -46,15 +46,14 @@ export class CokaServerContext extends Map<string, TCokaServerProviderState> {
 
 export function useCokaEffect<T extends DependencyList, O = any>(fn: (...args: T) => Promise<O>, deps: T) {
   const ctx = useContext(CokaServerProvider);
-  const callback = useCallback(() => fn(...deps), [fn, deps]);
-  if (!!ctx) return createServerEffect(ctx, callback);
+  if (!!ctx) return createServerEffect(ctx, () => fn(...deps));
   const [state, setState] = useState<O>(null);
   const [error, setError] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     let unmounted = false;
     setLoading(true);
-    callback().then(res => {
+    fn(...deps).then(res => {
       if (unmounted) return;
       startTransition(() => {
         setState(res);
