@@ -69,7 +69,7 @@ export function useCokaEffect<T extends DependencyList, O = any>(fn: (...args: T
     return () => {
       unmounted = true;
     }
-  }, [deps]);
+  }, deps);
   return {
     data: state,
     error,
