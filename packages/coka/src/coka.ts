@@ -16,7 +16,6 @@ import {
   PropsWithChildren, 
   FunctionComponent, 
   createElement, 
-  useDeferredValue, 
   useEffect, 
   useMemo, 
   useState,
@@ -81,7 +80,6 @@ export function createServer<T extends TCokaMode>(cokaMode?: interfaces.Newable<
    */
   const Browser = (props: PropsWithChildren<{}>) => {
     const [href, setHref] = useState<string>(null);
-    const _href = useDeferredValue(href);
     useEffect(() => {
       if (mode) {
         const handler = () => setHref(mode.getURL());
@@ -95,7 +93,7 @@ export function createServer<T extends TCokaMode>(cokaMode?: interfaces.Newable<
         }
       }
     }, []);
-    return createElement(Application, { href: _href }, props.children);
+    return createElement(Application, { href }, props.children);
   }
 
   const middlewares: TUseWidgetState[] = [];
