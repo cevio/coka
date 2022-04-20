@@ -1,14 +1,14 @@
-import React, { createContext, DependencyList, startTransition, useContext, useEffect, useId, useState } from 'react';
+import { createContext, useContext, useId } from 'react';
 import { TCokaServerProviderState } from './types';
-import { useAsync } from 'react-async-hook';
+import { useAsync, UseAsyncReturn } from 'react-async-hook';
 
 export const CokaServerProvider = createContext<CokaServerContext>(null);
 export class CokaServerContext extends Map<string, TCokaServerProviderState> {
-  public createServerProvider<T = any>(namespace: string): (fn: () => Promise<T>) => { data: T, error?: any, loading?: boolean } {
+  public createServerProvider<T = any>(namespace: string) {
     if (!this.has(namespace)) {
       this.set(namespace, this.createDefaultState<T>());
     }
-    return fn => {
+    return (fn: () => Promise<T>) => {
       const state = this.get(namespace) as TCokaServerProviderState<T>;
       switch (state.s) {
         case 0:
@@ -19,6 +19,7 @@ export class CokaServerContext extends Map<string, TCokaServerProviderState> {
         default: return {
           data: state.r,
           error: state.e,
+          loading: false,
         };
       }
     }
@@ -45,13 +46,13 @@ export class CokaServerContext extends Map<string, TCokaServerProviderState> {
   }
 }
 
-export function useCokaEffect<T extends any[], O = any>(fn: (...args: T) => Promise<O>, deps: T) {
+export function useCokaEffect<T extends any[], O = any>(fn: (...args: T) => Promise<O>, deps: T): Partial<UseAsyncReturn<O, T>> & { data: O } {
   const ctx = useContext(CokaServerProvider);
   if (!!ctx) return createServerEffect(ctx, () => fn(...deps));
   const { result, ...extra } = useAsync(fn, deps);
   return {
+    ...extra,
     data: result,
-    ...extra
   }
 }
 
