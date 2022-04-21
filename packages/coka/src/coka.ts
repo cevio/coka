@@ -70,7 +70,7 @@ export function createServer<T extends TCokaMode>(cokaMode?: interfaces.Newable<
           : props.children,
       }
     }, [props.href]);
-    return createElement(RequestContext.Provider, { value: object.state }, object.children);
+    return object.state ? createElement(RequestContext.Provider, { value: object.state }, object.children) : null;
   }
 
   /**
@@ -93,7 +93,7 @@ export function createServer<T extends TCokaMode>(cokaMode?: interfaces.Newable<
         }
       }
     }, []);
-    return createElement(Application, { href }, props.children);
+    return href ? createElement(Application, { href }, props.children) : null;
   }
 
   const middlewares: TUseWidgetState[] = [];
@@ -101,6 +101,7 @@ export function createServer<T extends TCokaMode>(cokaMode?: interfaces.Newable<
 
   const createMiddlewares = (widget: FunctionComponent<TRequest>, mds: TUseWidgetState[]) => {
     return (props: PropsWithoutRef<TRequest>) => {
+      if (!widget) return null;
       let i = mds.length;
       let next: FunctionComponentElement<any> = createElement(widget, props);
       while (i--) {
