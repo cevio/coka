@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import React, { FunctionComponent } from 'react';
 import { interfaces } from 'inversify';
 import { Widget, isWidget } from '../component';

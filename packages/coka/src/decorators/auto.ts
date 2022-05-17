@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { interfaces, Container, METADATA_KEY } from 'inversify';
 import { Widget } from '../component';
 /**

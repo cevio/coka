@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import mitt from 'mitt';
 import { Router } from './router';
 import { Widget } from './component';

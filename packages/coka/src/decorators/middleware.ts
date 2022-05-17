@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { interfaces } from 'inversify';
 import { FunctionComponent } from 'react';
 import { TComponent, Widget, isWidget } from '../component';

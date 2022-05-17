@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { injectable, interfaces } from 'inversify';
 import { FunctionComponent, useMemo } from 'react';
 import { redirect, replace } from './coka';
