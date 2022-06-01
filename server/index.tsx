@@ -1,37 +1,41 @@
-import React from 'react';
-import { createServer as createHttpServer } from 'http';
-import { renderToPipeableStream } from 'react-dom/server';
-import DemoExample from '../src/comp';
-import { createServer, CokaServerContext, CokaServerProvider } from '../packages/coka/src';
+import { IncomingMessage, ServerResponse } from 'http';
+const express = require('express')
+const { createServer: createViteServer } = require('vite')
+const serveStatic = require('serve-static');
 
-createHttpServer((req, res) => {
-  const { createService, Application } = createServer();
-  createService(DemoExample);
-  // createPathRule('/', dynamic(() => import('../src/comp'), <span style={{ color: 'red' }}>loading</span>));
-  const context = new CokaServerContext();
-  const url = 'http://localhost' + req.url;
-  const stream = renderToPipeableStream(
-    <html>
-      <title>ssr</title>
-      <body>
-        <CokaServerProvider.Provider value={context}>
-          <Application href={url}>404 Not Found</Application>
-        </CokaServerProvider.Provider>
-      </body>
-    </html>
-    ,
-    {
-      onShellReady() {
-        // If something errored before we started streaming, we set the error code appropriately.
-        res.statusCode = 200;
-        res.setHeader("Content-type", "text/html");
-        stream.pipe(res);
-      },
-      onError(x: any) {
-        res.statusCode = 500;
-        res.end(x.stack)
-        stream.abort();
-      }
+async function createServer() {
+  const app = express()
+  app.use((req: IncomingMessage, res: ServerResponse, next: Function) => {
+    if (req.url === '/src/favicon.svg') {
+      return res.end()
     }
-  )
-}).listen(9900, () => console.log('on 9900'));
+    next();
+  })
+  const vite = await createViteServer({
+    server: { 
+      middlewareMode: 'ssr',
+    }
+  })
+  // vite.config.plugins.push()
+  app.use(vite.middlewares)
+  // app.use((req, res, next) => {
+  //   if (req.url.endsWith('.html')) return next();
+  //   serveStatic('dist/client')(req, res, next);
+  // })
+  app.use('*', async (req, res) => {
+    try {
+      const render = await vite.ssrLoadModule('/src/server.tsx')
+      render.default(req, res)
+    } catch (e) {
+      vite.ssrFixStacktrace(e)
+      console.error(e)
+      res.status(500).end(e.message)
+    }
+  })
+
+  app.listen(3001, () => {
+    console.log('on 3000')
+  })
+}
+
+createServer()

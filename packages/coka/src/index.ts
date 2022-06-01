@@ -19,7 +19,6 @@ export * from './popstate';
 export * from './hashchange';
 export * from './types';
 export * from './provider';
-// export * from './dynamic';
 
 export {
   inject,

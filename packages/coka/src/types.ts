@@ -11,3 +11,12 @@ export interface TCokaServerProviderState<T = any> {
   p: Promise<void>,
   e: any
 }
+
+export interface TUseData<T = any> {
+  isValidating: boolean,
+  data: T,
+  promise: Promise<T>,
+  fn?: () => T
+}
+
+export type TCokaRuntimeMode = 'browser' | 'client' | 'server';

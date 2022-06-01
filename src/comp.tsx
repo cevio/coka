@@ -1,6 +1,6 @@
-import React, { useId } from 'react';
+import React, { Suspense, useId } from 'react';
 import { injectable } from 'inversify';
-import { Component, widget, Widget, TRequest, memo, controller, useCokaEffect } from '../packages/coka/src';
+import { Component, widget, Widget, TRequest, memo, controller, useSuspense, suspensable, useData } from '../packages/coka/src';
 import Mathic from './math';
 // const Mathic = dynamic(() => import('./math'), <span>loading...</span>);
 
@@ -9,12 +9,12 @@ import Mathic from './math';
 @controller()
 export default class DemoExample extends Component implements Widget<TRequest> {
   @memo
+  @suspensable(<span style={{ color: 'red' }}>loading</span>)
   public render(props: TRequest) {
-    const id = useId();
-    const {data} = useCokaEffect(() => {
+    const data = useSuspense('t3', () => {
       return new Promise<string[]>(resolve => {
-        console.log('get', 3)
         setTimeout(() => {
+          
           resolve([
             "3. Wait, it doesn't wait for React to load?",
             '3. How does this even work?',
@@ -22,16 +22,19 @@ export default class DemoExample extends Component implements Widget<TRequest> {
           ])
         }, 2000);
       })
-    }, []);
+    })
+    console.log('get', 3, data)
     const abc = Number(props.query.a || '0') + 100
     const _data = data || [];
-    return <div onClick={() => this.redirect('/222', { t: Date.now() + '' })}>
-      {abc} + [{id}]
-      <Mathic x={100} />
+    return <div>
+      <p onClick={() => alert(3)}>{abc}</p>
+      <Suspense fallback="loading...">
+        <Mathic x={100} />
+      </Suspense>
       <hr />
       {
         _data.map(d => <p key={d}>{d}</p>)
       }
-    </div>
+    </div>  
   }
 }

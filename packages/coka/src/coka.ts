@@ -5,6 +5,7 @@ import { Widget } from './component';
 import { TCokaMode } from './types';
 import { Container, interfaces } from 'inversify';
 import { TComponent, isWidget } from './component';
+import { TCokaRuntimeMode } from './types';
 import { 
   widgetRenderMetadataNameSpace, 
   ControllerMetadataNameSpace, 
@@ -34,6 +35,7 @@ export interface TRequest {
 }
 export const container = new Container();
 export const RequestContext = createContext<TRequest>(null);
+export const RuntimeModeContext = createContext<TCokaRuntimeMode>('server');
 export const redirect = (url: string) => e.emit('redirect', url);
 export const replace = (url: string) => e.emit('replace', url);
 
@@ -53,7 +55,6 @@ export function createServer<T extends TCokaMode>(cokaMode?: interfaces.Newable<
    */
   const Application = (props: PropsWithChildren<{ href: string }>) => {
     const object = useMemo(() => {
-      if (!props.href) return { state: null, children: null };
       const url = new URL(props.href);
       const query: Record<string, string> = {};
       for (const [key, value] of url.searchParams.entries()) query[key] = value
@@ -71,7 +72,28 @@ export function createServer<T extends TCokaMode>(cokaMode?: interfaces.Newable<
           : props.children,
       }
     }, [props.href]);
-    return object.state ? createElement(RequestContext.Provider, { value: object.state }, object.children) : null;
+    return createElement(RequestContext.Provider, { value: object.state }, object.children);
+  }
+
+  const Runtime = (props: PropsWithChildren<{ mode: TCokaRuntimeMode }>) => {
+    const [href, setHref] = useState<string>(mode.getURL());
+    useEffect(() => {
+      if (mode) {
+        const handler = () => setHref(mode.getURL());
+        const _handler = () => e.emit('change');
+        const feedback = mode.listen(_handler);
+        e.on('change', handler);
+        return () => {
+          e.off('change', handler);
+          feedback();
+        }
+      }
+    }, []);
+    return createElement(
+      RuntimeModeContext.Provider, 
+      { value: props.mode }, 
+      createElement(Application, { href }, props.children)
+    );
   }
 
   /**
@@ -79,23 +101,14 @@ export function createServer<T extends TCokaMode>(cokaMode?: interfaces.Newable<
    * @param props 
    * @returns 
    */
-  const Browser = (props: PropsWithChildren<{}>) => {
-    const [href, setHref] = useState<string>(null);
-    useEffect(() => {
-      if (mode) {
-        const handler = () => setHref(mode.getURL());
-        const _handler = () => e.emit('change');
-        const feedback = mode.listen(_handler);
-        e.on('change', handler);
-        handler();
-        return () => {
-          e.off('change', handler);
-          feedback();
-        }
-      }
-    }, []);
-    return href ? createElement(Application, { href }, props.children) : null;
-  }
+  const Browser = (props: PropsWithChildren<{}>) => createElement(Runtime, { mode: 'browser' }, props.children);
+
+  /**
+   * 服务端渲染的client端组件
+   * @param props 
+   * @returns 
+   */
+  const Client = (props: PropsWithChildren<{}>) => createElement(Runtime, { mode: 'client' }, props.children);
 
   const middlewares: TUseWidgetState[] = [];
   const use = <P>(cmp: TComponent<P>, props?: P) => middlewares.push(transformComponent(cmp, props));
@@ -144,6 +157,7 @@ export function createServer<T extends TCokaMode>(cokaMode?: interfaces.Newable<
   return {
     use,
     Browser,
+    Client,
     Application,
     createPathRule,
     createService,
