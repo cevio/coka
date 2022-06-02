@@ -1,6 +1,6 @@
 import React, { Suspense, useId } from 'react';
 import { injectable } from 'inversify';
-import { Component, widget, Widget, TRequest, memo, controller, useSuspense, suspensable, useData } from '../packages/coka/src';
+import { Component, widget, Widget, TRequest, memo, controller, useSuspense, suspensable } from '../packages/coka/src';
 import Mathic from './math';
 // const Mathic = dynamic(() => import('./math'), <span>loading...</span>);
 
@@ -14,7 +14,6 @@ export default class DemoExample extends Component implements Widget<TRequest> {
     const data = useSuspense('t3', () => {
       return new Promise<string[]>(resolve => {
         setTimeout(() => {
-          
           resolve([
             "3. Wait, it doesn't wait for React to load?",
             '3. How does this even work?',

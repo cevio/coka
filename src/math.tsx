@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSuspense, useData } from '../packages/coka/src';
+import { useSuspense } from '../packages/coka/src';
 
 
 export default React.memo((props: React.PropsWithChildren<{ x: number }>) => {
@@ -33,7 +33,7 @@ export default React.memo((props: React.PropsWithChildren<{ x: number }>) => {
     {
       _data1.map(d => <p key={d}>{d}</p>)
     }
-    <hr />
+    {/* <hr /> */}
     {/* {
       _data2.map(d => <p key={d}>{d}</p>)
     } */}

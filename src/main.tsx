@@ -7,3 +7,4 @@ const application = createServer(CokaHashChangeMode);
 const Browser = application.Browser;
 createRouter(application);
 app.render(<Browser>404 Not Found</Browser>);
+console.log(1)
