@@ -14,6 +14,7 @@ export default class DemoExample extends Component implements Widget<TRequest> {
     const data = useSuspense('t3', () => {
       return new Promise<string[]>(resolve => {
         setTimeout(() => {
+          console.log('get', 3)
           resolve([
             "3. Wait, it doesn't wait for React to load?",
             '3. How does this even work?',
@@ -22,7 +23,7 @@ export default class DemoExample extends Component implements Widget<TRequest> {
         }, 2000);
       })
     })
-    console.log('get', 3, data)
+    
     const abc = Number(props.query.a || '0') + 100
     const _data = data || [];
     return <div>

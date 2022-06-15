@@ -6,6 +6,7 @@ import { TCokaMode } from './types';
 import { Container, interfaces } from 'inversify';
 import { TComponent, isWidget } from './component';
 import { TCokaRuntimeMode } from './types';
+import { CokaServerProvider, CokaServerContext } from './provider';
 import { 
   widgetRenderMetadataNameSpace, 
   ControllerMetadataNameSpace, 
@@ -22,7 +23,7 @@ import {
   useMemo, 
   useState,
   FunctionComponentElement,
-  PropsWithoutRef
+  PropsWithoutRef,
 } from 'react';
 
 const e = mitt();
@@ -103,12 +104,30 @@ export function createServer<T extends TCokaMode>(cokaMode?: interfaces.Newable<
    */
   const Browser = (props: PropsWithChildren<{}>) => createElement(Runtime, { mode: 'browser' }, props.children);
 
+  const clientContext = new CokaServerContext();
   /**
    * 服务端渲染的client端组件
    * @param props 
    * @returns 
    */
-  const Client = (props: PropsWithChildren<{}>) => createElement(Runtime, { mode: 'client' }, props.children);
+  const Client = (props: PropsWithChildren<{ state?: Record<string, any> }>) => {
+    const value = props.state || {};
+    for (const i in value) {
+      if (!clientContext.has(i)) {
+        clientContext.set(i, {
+          isValidating: false,
+          data: value[i],
+          promise: null,
+          fn: null,
+        })
+      }
+    }
+    return createElement(
+      CokaServerProvider.Provider, 
+      { value: clientContext },
+      createElement(Runtime, { mode: 'client' }, props.children)
+    )
+  };
 
   const middlewares: TUseWidgetState[] = [];
   const use = <P>(cmp: TComponent<P>, props?: P) => middlewares.push(transformComponent(cmp, props));

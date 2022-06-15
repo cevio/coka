@@ -17,7 +17,7 @@ export default React.memo((props: React.PropsWithChildren<{ x: number }>) => {
   // console.log('get', 2, data2)
   const data = useSuspense('t1', () => new Promise<string[]>(resolve => {
     setTimeout(() => {
-      
+      console.log('get', 1)
       resolve([
         "1. Wait, it doesn't wait for React to load?",
         '1. How does this even work?',
@@ -25,7 +25,7 @@ export default React.memo((props: React.PropsWithChildren<{ x: number }>) => {
       ])
     }, 1000);
   }));
-  console.log('get', 1, data)
+  
   const _data1 = data || [];
   // const _data2 = data2 || [];
   return <div>

@@ -70,7 +70,7 @@ function createPackageFile(dir, project) {
 }
 
 function createReadme(dir, project) {
-  const template = `# \`@nppm/${project}\`
+  const template = `# \`@coka/${project}\`
 
   > TODO: description
   

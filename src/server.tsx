@@ -23,9 +23,8 @@ export default function CokaServerRender(req: IncomingMessage, res: ServerRespon
       stream.abort();
     },
     onAllReady() {
-      console.log('a', context.toJSON())
-    },
-    bootstrapScriptContent: 'window.COKA_INITIALIZE_STATE = ' + JSON.stringify(context.toJSON())
+      res.write(`<script>;window.__COKA_INITIALIZE_STATE__ = ${JSON.stringify(context.toJSON())};</script>`);
+    }
   }
   if (isdev) {
     options.bootstrapModules = ['/src/client.tsx']

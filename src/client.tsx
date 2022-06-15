@@ -8,7 +8,10 @@ const application = createServer(CokaPopStateMode);
 const Client = application.Client;
 const element = document.getElementById('root');
 createRouter(application);
-hydrateRoot(
-  element,
-  <Client>404 Not Found</Client>
-);
+window.onload = () => {
+  hydrateRoot(
+    element,
+    // @ts-ignore
+    <Client state={window.__COKA_INITIALIZE_STATE__}>404 Not Found</Client>
+  );
+}

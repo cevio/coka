@@ -1,0 +1,27 @@
+{
+  "name": "@coka/ssr",
+  "version": "1.0.0",
+  "description": "react web framework:ssr",
+  "author": "shenyunjie ",
+  "homepage": "https://github.com/cevio/drake/tree/master/packages/ssr",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "keywords": [
+    "npm"
+  ],
+  "directories": {
+    "lib": "src"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rm -rf ./dist && tsc"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@coka/coka": "^2.0.2"
+  }
+}

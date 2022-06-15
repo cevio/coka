@@ -1,4 +1,5 @@
 import { createContext, useContext } from 'react';
+import { RuntimeModeContext } from './coka';
 import { TUseData } from './types';
 
 export class CokaServerContext extends Map<string, TUseData> {
@@ -15,6 +16,7 @@ export const CokaServerProvider = createContext(new CokaServerContext());
 
 export function useSuspense<T = any>(key: string, fetcher: () => Promise<T>): T {
   const ctx = useContext(CokaServerProvider);
+  const mode = useContext(RuntimeModeContext);
   const mutate = () => {
     const target = ctx.get(key);
     target.isValidating = true;
@@ -49,6 +51,9 @@ export function useSuspense<T = any>(key: string, fetcher: () => Promise<T>): T 
       isValidating: false,
       fn: createFetcher(),
     })
+  } else if (mode === 'client') {
+    const target = ctx.get(key);
+    target.fn = createFetcher();
   }
   const target = ctx.get(key) as TUseData<T>;
   return target.fn();
