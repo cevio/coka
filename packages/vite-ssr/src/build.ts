@@ -25,6 +25,9 @@ export function createCokaBuildServer(options: TBuildConfigs) {
         configs.build.outDir = options.serverDir;
         configs.build.ssr = options.serverEntryFile;
         configs.build.ssrManifest = !!options.ssrManifest;
+        if (configs.build.rollupOptions?.manualChunks) {
+          delete configs.build.rollupOptions.manualChunks;
+        }
       }
     }
   }
