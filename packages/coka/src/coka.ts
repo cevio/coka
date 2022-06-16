@@ -6,7 +6,7 @@ import { TCokaMode } from './types';
 import { Container, interfaces } from 'inversify';
 import { TComponent, isWidget } from './component';
 import { TCokaRuntimeMode } from './types';
-import { CokaServerProvider, CokaServerContext } from './provider';
+import { CokaServerProvider, CokaServerProviderContext } from './provider';
 import { 
   widgetRenderMetadataNameSpace, 
   ControllerMetadataNameSpace, 
@@ -104,27 +104,28 @@ export function createServer<T extends TCokaMode>(cokaMode?: interfaces.Newable<
    */
   const Browser = (props: PropsWithChildren<{}>) => createElement(Runtime, { mode: 'browser' }, props.children);
 
-  const clientContext = new CokaServerContext();
   /**
    * 服务端渲染的client端组件
    * @param props 
    * @returns 
    */
   const Client = (props: PropsWithChildren<{ state?: Record<string, any> }>) => {
-    const value = props.state || {};
-    for (const i in value) {
-      if (!clientContext.has(i)) {
-        clientContext.set(i, {
-          isValidating: false,
-          data: value[i],
-          promise: null,
-          fn: null,
-        })
+    if (props.state) {
+      const value = props.state;
+      for (const i in value) {
+        if (!CokaServerProviderContext.has(i)) {
+          CokaServerProviderContext.set(i, {
+            isValidating: false,
+            data: value[i],
+            promise: null,
+            fn: null,
+          })
+        }
       }
     }
     return createElement(
       CokaServerProvider.Provider, 
-      { value: clientContext },
+      { value: CokaServerProviderContext },
       createElement(Runtime, { mode: 'client' }, props.children)
     )
   };

@@ -20,5 +20,8 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "dependencies": {
+    "vite": "^2.9.12"
   }
 }
