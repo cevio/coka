@@ -1,5 +1,6 @@
 import { createCokaDevServer, TDevConfigs } from './dev';
 import { createCokaBuildServer, TBuildConfigs } from './build';
+import { PluginOption } from 'vite';
 
 export default function createCokaServer(options: TDevConfigs & TBuildConfigs) {
   if (!options.serverEntryFile) options.serverEntryFile = '/src/entry-server.tsx';
@@ -21,5 +22,5 @@ export default function createCokaServer(options: TDevConfigs & TBuildConfigs) {
       scriptBootstrapNamespace: options.scriptBootstrapNamespace,
       ssrManifest: options.ssrManifest,
     })
-  ]
+  ] as PluginOption;
 }
