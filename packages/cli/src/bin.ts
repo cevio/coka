@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { Command } from 'commander';
 import createDevServer from './dev';
 import createBuilder from './build';
