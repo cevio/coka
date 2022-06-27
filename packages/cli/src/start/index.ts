@@ -1,7 +1,9 @@
 import * as express from 'express';
+import * as serveStatic from 'serve-static';
 import { loadConfigs } from '../config';
 import { existsSync } from 'fs';
 import { resolve } from 'path';
+
 export default async function createStarter(_port: string) {
   const configs = loadConfigs();
   const port = Number(_port);
@@ -11,6 +13,8 @@ export default async function createStarter(_port: string) {
   
   const serverEntry = require(serverEntryFile);
   const app = express();
+  
+  app.use(serveStatic(configs.output.client));
   app.get('*', (req, res) => serverEntry.default(req, res));
 
   app.listen(port, (err?: Error) => {
