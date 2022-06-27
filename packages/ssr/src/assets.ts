@@ -25,7 +25,7 @@ export function getProdAssets() {
   if (!existsSync(clientDir)) throw new Error('miss client output dictionary');
   const manifest_file = resolve(clientDir, 'manifest.json');
   if (!existsSync(manifest_file)) throw new Error('miss client manifest.json');
-  const manifest = require('manifest_file');
+  const manifest = require(manifest_file);
   const file = configs.input.client.startsWith('/') ? configs.input.client.substring(1) : configs.input.client;
   if (!manifest[file]) throw new Error('Not Found');
   headerScripts.push({
