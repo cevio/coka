@@ -1,0 +1,9 @@
+{
+  "clientDir":"dist/client",
+  "serverDir":"dist/server",
+  "clientEntryFile":"/src/entry-client.tsx",
+  "serverEntryFile":"/src/entry-server.tsx",
+  "scriptBootstrapNamespace":"index",
+  "ssrManifest":true,
+  "rewrites":{"/index.html":"/"}
+}

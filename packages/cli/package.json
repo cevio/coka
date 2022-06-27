@@ -1,0 +1,34 @@
+{
+  "name": "@coka/cli",
+  "version": "1.0.0",
+  "description": "react web framework:cli",
+  "author": "shenyunjie ",
+  "homepage": "https://github.com/cevio/drake/tree/master/packages/cli",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "bin": {
+    "coka": "dist/bin.js"
+  },
+  "keywords": [
+    "npm"
+  ],
+  "directories": {
+    "lib": "src"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rm -rf ./dist && tsc"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@stdlib/fs-resolve-parent-path": "^0.0.8",
+    "@types/express": "^4.17.13",
+    "commander": "^9.3.0",
+    "express": "^4.18.1",
+    "vite": "^2.9.12"
+  }
+}

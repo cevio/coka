@@ -1,11 +1,11 @@
-# `@nppm/vite-ssr`
+# `@coka/cli`
 
   > TODO: description
   
   ## Usage
   
   ```
-  const container = require('@nppm/vite-ssr');
+  const container = require('@nppm/cli');
   
   // TODO: DEMONSTRATE API
   ```
