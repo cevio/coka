@@ -2,8 +2,9 @@ import React, { createElement } from 'react';
 import { IncomingMessage, ServerResponse } from 'http';
 import { createServer, CokaServerProvider, CokaServerContext } from '@coka/coka';
 import { renderToPipeableStream, RenderToPipeableStreamOptions } from 'react-dom/server';
+import { getDevAssets, getProdAssets } from './assets';
 
-interface THeaderScript {
+export interface THeaderScript {
   type?: string,
   crossOrigin?: 'anonymous' | 'use-credentials',
   src: string,
@@ -19,17 +20,13 @@ export interface TOptions {
   notFound: React.FunctionComponent,
   namespace?: string,
   stream?: RenderToPipeableStreamOptions,
-  assets: {
-    headerScripts?: (string | THeaderScript)[],
-    headerPreloadScripts?: string[],
-    headerCsses?: string[],
-    bodyScripts?: (string | THeaderScript)[],
-  }
 }
 
 export default (options: TOptions, callback: (app: ReturnType<typeof createServer>) => void) => {
   const Html = options.html;
   const NotFound = options.notFound;
+  const isDev = process.env.NODE_ENV === 'development';
+  const assets = isDev ? getDevAssets() : getProdAssets();
   return (req: IncomingMessage, res: ServerResponse) => {
     const application = createServer();
     const Application = application.Application;
@@ -60,7 +57,7 @@ export default (options: TOptions, callback: (app: ReturnType<typeof createServe
     
     const app = createElement(Application, { href: url }, createElement(NotFound));
     const provider = createElement(CokaServerProvider.Provider, { value: context }, app);
-    const root = createElement(Html, options.assets, provider);
+    const root = createElement(Html, assets, provider);
     const stream = renderToPipeableStream(root, configs);
     return stream;
   }
