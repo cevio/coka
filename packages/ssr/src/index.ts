@@ -27,15 +27,17 @@ export default (options: TOptions, callback: (app: ReturnType<typeof createServe
   const NotFound = options.notFound;
   const isDev = process.env.NODE_ENV === 'development';
   const assets = isDev ? getDevAssets() : getProdAssets();
-  return (req: IncomingMessage, res: ServerResponse) => {
+  return (req: IncomingMessage, res: ServerResponse, next: Function) => {
     const application = createServer();
     const Application = application.Application;
     const context = new CokaServerContext();
     const host = req.headers.host || '127.0.0.1';
     // @ts-ignore
     const originalUrl = req.originalUrl as string;
-    const url = 'http://' + host + (originalUrl || req.url);
+    const _url = originalUrl || req.url;
+    const url = 'http://' + host + _url;
     callback(application);
+    if (!application.matchable(_url)) return next();
     const configs: RenderToPipeableStreamOptions = {
       ...options.stream,
       onShellReady() {

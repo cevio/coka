@@ -48,6 +48,10 @@ export function createServer<T extends TCokaMode>(cokaMode?: interfaces.Newable<
     ignoreTrailingSlash: true,
   })
 
+  const matchable = (url: string) => {
+    return !!router.find(url);
+  }
+
   /**
    * 通用组件
    * 一般用于SSR渲染
@@ -176,6 +180,7 @@ export function createServer<T extends TCokaMode>(cokaMode?: interfaces.Newable<
 
   return {
     use,
+    matchable,
     Browser,
     Client,
     Application,
