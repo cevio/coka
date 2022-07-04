@@ -1,6 +1,6 @@
 {
   "name": "@coka/ssr",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "react web framework:ssr",
   "author": "shenyunjie ",
   "homepage": "https://github.com/cevio/drake/tree/master/packages/ssr",
@@ -22,7 +22,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@coka/cli": "^1.0.6",
+    "@coka/cli": "^1.0.7",
     "@coka/coka": "^2.1.3"
   }
 }
