@@ -15,4 +15,5 @@ export interface TConfigs {
     server?: string,
   },
   rewrites?: Record<string, string>,
+  nexts: string[],
 }

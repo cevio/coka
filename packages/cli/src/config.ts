@@ -26,6 +26,10 @@ export function loadConfigs(dir: string = process.cwd()): TConfigs {
   if (!_configs.rewrites) _configs.rewrites = _.rewrites;
   _configs.rewrites = Object.assign(_.rewrites, _configs.rewrites);
 
+  if (!_configs.nexts) _configs.nexts = [];
+  const nexts = new Set(_configs.nexts.concat(_.nexts || []));
+  _configs.nexts = Array.from(nexts.values());
+
   return _configs;
 }
 
@@ -48,6 +52,11 @@ function createDefaultConfigs(): TConfigs {
     },
     rewrites: {
       '/index.html': '/'
-    }
+    },
+    nexts: [
+      '/@react-refresh',
+      '/@id/vite/modulepreload-polyfill',
+      '/@vite/client'
+    ]
   }
 }
