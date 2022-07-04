@@ -40,7 +40,7 @@ export function createViteDevServerPlugin(configs: TConfigs): PluginOption {
         try {
           const renderer = await server.ssrLoadModule(configs.input.server);
           if (typeof renderer.default !== 'function') return next();
-          renderer.default(req, res);
+          renderer.default(req, res, next);
         } catch(e) {
           server.ssrFixStacktrace(e);
           res.statusCode = 500;

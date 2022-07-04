@@ -15,7 +15,7 @@ export default async function createStarter(_port: string) {
   const app = express();
   
   app.use(serveStatic(configs.output.client));
-  app.get('*', (req, res) => serverEntry.default(req, res));
+  app.get('*', (req, res, next) => serverEntry.default(req, res, next));
 
   app.listen(port, (err?: Error) => {
     if (err) return console.error(err);
