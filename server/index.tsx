@@ -6,6 +6,7 @@ const serveStatic = require('serve-static');
 async function createServer() {
   const app = express()
   app.use((req: IncomingMessage, res: ServerResponse, next: Function) => {
+    
     if (req.url === '/src/favicon.svg') {
       return res.end()
     }
@@ -24,6 +25,7 @@ async function createServer() {
   // })
   app.use('*', async (req, res) => {
     try {
+      console.log(req)
       const render = await vite.ssrLoadModule('/src/server.tsx')
       render.default(req, res)
     } catch (e) {

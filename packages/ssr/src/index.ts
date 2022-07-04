@@ -32,7 +32,9 @@ export default (options: TOptions, callback: (app: ReturnType<typeof createServe
     const Application = application.Application;
     const context = new CokaServerContext();
     const host = req.headers.host || '127.0.0.1';
-    const url = 'http://' + host + req.url;
+    // @ts-ignore
+    const originalUrl = req.originalUrl as string;
+    const url = 'http://' + host + (originalUrl || req.url);
     callback(application);
     const configs: RenderToPipeableStreamOptions = {
       ...options.stream,

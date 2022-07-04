@@ -2,6 +2,8 @@ import { createServer, PluginOption, ViteDevServer } from 'vite';
 import { loadConfigs } from '../config';
 import { buildHTML } from '../html';
 import { TConfigs } from '../types';
+import { resolve } from 'path';
+import { existsSync } from 'fs';
 
 export async function createViteDevServer(mode: 'web' | 'ssr') {
   process.env.NODE_ENV = 'development';
@@ -31,9 +33,10 @@ export function createViteDevServerPlugin(configs: TConfigs): PluginOption {
     apply: 'serve',
     configureServer(server: ViteDevServer) {
       server.middlewares.use(async (req, res, next) => {
+        const root = server.config.root || process.cwd();
         const url = decodeURI(generateUrl(req.url));
-        if (!url.endsWith('.html') && url !== '/') return next();
         if (configs.rewrites[url]) req.url = configs.rewrites[url];
+        if (existsSync(resolve(root, url.startsWith('/') ? '.' + url : url))) return next();
         try {
           const renderer = await server.ssrLoadModule(configs.input.server);
           if (typeof renderer.default !== 'function') return next();

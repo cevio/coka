@@ -9,7 +9,8 @@ export default function CokaServerRender(req: IncomingMessage, res: ServerRespon
   const context = new CokaServerContext();
   const Application = application.Application;
   const host = req.headers.host || '127.0.0.1';
-  const url = 'http://' + host + req.url;
+  // @ts-ignore
+  const url = 'http://' + host + (req.originalUrl || req.url);
   createRouter(application);
   const options: RenderToPipeableStreamOptions = {
     onShellReady() {
