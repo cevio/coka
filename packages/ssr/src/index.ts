@@ -58,7 +58,9 @@ export default (options: TOptions, callback: (app: ReturnType<typeof createServe
         options?.stream?.onAllReady();
       }
     }
-    
+    /**
+     * headers from http
+     */
     const app = createElement(Application, { href: url, headers: req.headers }, createElement(NotFound));
     const provider = createElement(CokaServerProvider.Provider, { value: context }, app);
     const root = createElement(Html, assets, provider);

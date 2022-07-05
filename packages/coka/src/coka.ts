@@ -35,7 +35,7 @@ export interface TRequest {
   query: Record<string, string>,
   params: Record<string, string>,
   hostname: string,
-  headers?: IncomingHttpHeaders,
+  headers?: IncomingHttpHeaders, // headers from https. using ssr
 }
 export const container = new Container();
 export const RequestContext = createContext<TRequest>(null);
