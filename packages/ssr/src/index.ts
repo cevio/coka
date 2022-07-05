@@ -59,7 +59,7 @@ export default (options: TOptions, callback: (app: ReturnType<typeof createServe
       }
     }
     
-    const app = createElement(Application, { href: url }, createElement(NotFound));
+    const app = createElement(Application, { href: url, headers: req.headers }, createElement(NotFound));
     const provider = createElement(CokaServerProvider.Provider, { value: context }, app);
     const root = createElement(Html, assets, provider);
     const stream = renderToPipeableStream(root, configs);

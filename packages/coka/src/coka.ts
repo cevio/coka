@@ -7,6 +7,7 @@ import { Container, interfaces } from 'inversify';
 import { TComponent, isWidget } from './component';
 import { TCokaRuntimeMode } from './types';
 import { CokaServerProvider, CokaServerProviderContext } from './provider';
+import type { IncomingHttpHeaders } from 'http';
 import { 
   widgetRenderMetadataNameSpace, 
   ControllerMetadataNameSpace, 
@@ -33,6 +34,8 @@ export interface TRequest {
   pathname: string,
   query: Record<string, string>,
   params: Record<string, string>,
+  hostname: string,
+  headers?: IncomingHttpHeaders,
 }
 export const container = new Container();
 export const RequestContext = createContext<TRequest>(null);
@@ -58,7 +61,7 @@ export function createServer<T extends TCokaMode>(cokaMode?: interfaces.Newable<
    * @param props 
    * @returns 
    */
-  const Application = (props: PropsWithChildren<{ href: string }>) => {
+  const Application = (props: PropsWithChildren<{ href: string, headers?: IncomingHttpHeaders }>) => {
     const object = useMemo(() => {
       const url = new URL(props.href);
       const query: Record<string, string> = {};
@@ -69,6 +72,8 @@ export function createServer<T extends TCokaMode>(cokaMode?: interfaces.Newable<
         pathname: url.pathname,
         query: query,
         params: matched ? matched.params : {},
+        hostname: url.hostname,
+        headers: props.headers,
       }
       return {
         state,
