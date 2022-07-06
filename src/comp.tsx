@@ -6,9 +6,7 @@ import Mathic from './math';
 
 @widget
 @injectable()
-@controller()
 export default class DemoExample extends Component implements Widget<TRequest> {
-  @memo
   @suspensable(<span style={{ color: 'red' }}>loading</span>)
   public render(props: TRequest) {
     const data = useSuspense('t3', () => {

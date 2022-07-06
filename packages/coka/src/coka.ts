@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import mitt from 'mitt';
+import { ref } from '@vue/reactivity';
 import { Router } from './router';
 import { Widget } from './component';
 import { TCokaMode } from './types';
@@ -7,6 +8,7 @@ import { Container, interfaces } from 'inversify';
 import { TComponent, isWidget } from './component';
 import { TCokaRuntimeMode } from './types';
 import { CokaServerProvider, CokaServerProviderContext } from './provider';
+import { WidgetInstance } from './instance';
 import type { IncomingHttpHeaders } from 'http';
 import { 
   widgetRenderMetadataNameSpace, 
@@ -23,8 +25,6 @@ import {
   useEffect, 
   useMemo, 
   useState,
-  FunctionComponentElement,
-  PropsWithoutRef,
 } from 'react';
 
 const e = mitt();
@@ -42,6 +42,7 @@ export const RequestContext = createContext<TRequest>(null);
 export const RuntimeModeContext = createContext<TCokaRuntimeMode>('server');
 export const redirect = (url: string) => e.emit('redirect', url);
 export const replace = (url: string) => e.emit('replace', url);
+export const href = ref<string>(null);
 
 export function createServer<T extends TCokaMode>(cokaMode?: interfaces.Newable<T>) {
   const mode = cokaMode ? new cokaMode() : null;
@@ -75,14 +76,20 @@ export function createServer<T extends TCokaMode>(cokaMode?: interfaces.Newable<
         hostname: url.hostname,
         headers: props.headers,
       }
-      return {
-        state,
-        children: matched 
-          ? createElement(matched.handler as FunctionComponent<Partial<TRequest>>, state) 
-          : props.children,
+      if (matched) {
+        const widget: WidgetInstance = matched.handler();
+        return {
+          state, 
+          next: widget.render(state),
+        }
+      } else {
+        return {
+          state,
+          next: props.children
+        }
       }
-    }, [props.href]);
-    return createElement(RequestContext.Provider, { value: object.state }, object.children);
+    }, [props.href, props.headers]);
+    return createElement(RequestContext.Provider, { value: object.state }, object.next);
   }
 
   const Runtime = (props: PropsWithChildren<{ mode: TCokaRuntimeMode }>) => {
@@ -143,15 +150,8 @@ export function createServer<T extends TCokaMode>(cokaMode?: interfaces.Newable<
   const use = <P>(cmp: TComponent<P>, props?: P) => middlewares.push(transformComponent(cmp, props));
 
   const createMiddlewares = (widget: FunctionComponent<TRequest>, mds: TUseWidgetState[]) => {
-    return (props: PropsWithoutRef<TRequest>) => {
-      if (!widget) return null;
-      let i = mds.length;
-      let next: FunctionComponentElement<any> = createElement(widget, props);
-      while (i--) {
-        next = createElement(mds[i].widget, mds[i].props, next);
-      }
-      return next;
-    }
+    const _widget = new WidgetInstance(widget, mds);
+    return () => _widget;
   }
 
   const createPathRule = (path: string, cmp: TComponent) => {

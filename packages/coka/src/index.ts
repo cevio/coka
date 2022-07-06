@@ -19,6 +19,7 @@ export * from './popstate';
 export * from './hashchange';
 export * from './types';
 export * from './provider';
+export * from './instance';
 
 export {
   inject,
