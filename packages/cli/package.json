@@ -1,6 +1,6 @@
 {
   "name": "@coka/cli",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "react web framework:cli",
   "author": "shenyunjie ",
   "homepage": "https://github.com/cevio/drake/tree/master/packages/cli",
