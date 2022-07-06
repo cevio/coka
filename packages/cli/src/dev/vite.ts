@@ -38,11 +38,11 @@ export function createViteDevServerPlugin(configs: TConfigs): PluginOption {
     },
     configureServer(server: ViteDevServer) {
       server.middlewares.use(async (req, res, next) => {
-        const root = server.config.root || process.cwd();
+        // const root = server.config.root || process.cwd();
         const url = decodeURI(generateUrl(req.url));
         if (configs.rewrites[url]) req.url = configs.rewrites[url];
         if (configs.nexts.includes(url)) return next();
-        if (existsSync(resolve(root, url.startsWith('/') ? '.' + url : url))) return next();
+        // if (existsSync(resolve(root, url.startsWith('/') ? '.' + url : url))) return next();
         try {
           const renderer = await server.ssrLoadModule(configs.input.server);
           if (typeof renderer.default !== 'function') return next();
