@@ -1,6 +1,5 @@
 import 'reflect-metadata';
 import mitt from 'mitt';
-import { ref } from '@vue/reactivity';
 import { Router } from './router';
 import { Widget } from './component';
 import { TCokaMode } from './types';
@@ -42,7 +41,6 @@ export const RequestContext = createContext<TRequest>(null);
 export const RuntimeModeContext = createContext<TCokaRuntimeMode>('server');
 export const redirect = (url: string) => e.emit('redirect', url);
 export const replace = (url: string) => e.emit('replace', url);
-export const href = ref<string>(null);
 
 export function createServer<T extends TCokaMode>(cokaMode?: interfaces.Newable<T>) {
   const mode = cokaMode ? new cokaMode() : null;
