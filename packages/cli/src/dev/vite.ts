@@ -1,6 +1,6 @@
 import { createServer, PluginOption, ViteDevServer } from 'vite';
 import { loadConfigs } from '../config';
-import { buildHTML } from '../html';
+import { buildHTML, cleanHTML } from '../html';
 import { TConfigs } from '../types';
 import { resolve } from 'path';
 import { existsSync } from 'fs';
@@ -11,6 +11,7 @@ export async function createViteDevServer(mode: 'web' | 'ssr') {
   if (mode === 'web') await buildHTML(configs);
   const plugins: PluginOption[] = [];
   if (mode === 'ssr') {
+    cleanHTML();
     plugins.push(createViteDevServerPlugin(configs));
   }
   const server = await createServer({

@@ -3,7 +3,7 @@ import { createServer } from 'vite';
 import { TConfigs } from './types';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { createElement } from 'react';
-import { writeFileSync } from 'fs';
+import { writeFileSync, existsSync, unlinkSync } from 'fs';
 import { resolve } from 'path';
 
 const nodeModulesDictionary = sync('node_modules', { dir: process.cwd() });
@@ -24,4 +24,9 @@ export async function buildHTML(configs: TConfigs) {
   }))
   writeFileSync(templatePath, html, 'utf8');
   await server.close();
+}
+export function cleanHTML() {
+  if (existsSync(templatePath)) {
+    unlinkSync(templatePath);
+  }
 }
