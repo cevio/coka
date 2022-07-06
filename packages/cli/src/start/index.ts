@@ -3,6 +3,7 @@ import * as serveStatic from 'serve-static';
 import { loadConfigs } from '../config';
 import { existsSync } from 'fs';
 import { resolve } from 'path';
+import { createProxyMiddleware } from 'http-proxy-middleware';
 
 export default async function createStarter(_port: string) {
   const configs = loadConfigs();
@@ -15,6 +16,12 @@ export default async function createStarter(_port: string) {
   const app = express();
   
   app.use(serveStatic(configs.output.client));
+  
+  const proxies = configs.proxy || {};
+  for (const i in proxies) {
+    app.use(i, createProxyMiddleware(proxies[i]));
+  }
+
   app.get('*', (req, res, next) => serverEntry.default(req, res, next));
 
   app.listen(port, (err?: Error) => {

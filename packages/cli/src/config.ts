@@ -30,6 +30,9 @@ export function loadConfigs(dir: string = process.cwd()): TConfigs {
   const nexts = new Set(_configs.nexts.concat(_.nexts || []));
   _configs.nexts = Array.from(nexts.values());
 
+  if (!_configs.proxy) _configs.proxy = {};
+  _configs.proxy = Object.assign(_configs.proxy, _.proxy || {});
+
   return _configs;
 }
 
@@ -57,6 +60,7 @@ function createDefaultConfigs(): TConfigs {
       '/@react-refresh',
       '/@id/vite/modulepreload-polyfill',
       '/@vite/client'
-    ]
+    ],
+    
   }
 }

@@ -1,3 +1,4 @@
+import { Options } from 'http-proxy-middleware';
 export interface TConfigs {
   namespace?: {
     window?: string,
@@ -16,4 +17,5 @@ export interface TConfigs {
   },
   rewrites?: Record<string, string>,
   nexts: string[],
+  proxy?: Record<string, Options>,
 }
