@@ -31,6 +31,10 @@ export function createViteDevServerPlugin(configs: TConfigs): PluginOption {
   return {
     name: 'vite:coka:dev',
     apply: 'serve',
+    config(options) {
+      if (!options.server) options.server = {};
+      options.server.proxy = configs.proxy;
+    },
     configureServer(server: ViteDevServer) {
       server.middlewares.use(async (req, res, next) => {
         const root = server.config.root || process.cwd();
