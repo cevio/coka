@@ -1,11 +1,14 @@
 import { sync } from '@stdlib/fs-resolve-parent-path';
 import { TConfigs } from './types';
+import { resolve } from 'path';
+import { existsSync } from 'fs';
 
 const filename = 'coka.config.json';
 
 export function loadConfigs(dir: string = process.cwd()): TConfigs {
   const _ = createDefaultConfigs();
-  const filepath = sync(filename, { dir });
+  let filepath = resolve(dir, filename);
+  if (!existsSync(filepath)) filepath = sync(filename, { dir });
   if (!filepath) return _;
   const _configs = require(filepath) as TConfigs;
   if (!_configs.namespace) _configs.namespace = _.namespace;
