@@ -25,7 +25,6 @@ async function createServer() {
   // })
   app.use('*', async (req, res) => {
     try {
-      console.log(req)
       const render = await vite.ssrLoadModule('/src/server.tsx')
       render.default(req, res)
     } catch (e) {

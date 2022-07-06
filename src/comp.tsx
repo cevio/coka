@@ -27,7 +27,7 @@ export default class DemoExample extends Component implements Widget<TRequest> {
     const abc = Number(props.query.a || '0') + 100
     const _data = data || [];
     return <div>
-      <p onClick={() => this.redirect('/t')}>{abc}</p>
+      <button onClick={() => this.redirect('/t')}>{abc}</button>
       <Suspense fallback="loading...">
         <Mathic x={100} />
       </Suspense>
