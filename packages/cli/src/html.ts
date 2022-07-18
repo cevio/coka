@@ -9,7 +9,7 @@ import { resolve } from 'path';
 const nodeModulesDictionary = sync('node_modules', { dir: process.cwd() });
 
 export const templatePath = resolve(nodeModulesDictionary, '../index.html');
-export async function buildHTML(configs: TConfigs) {
+export async function buildHTML(configs: TConfigs, isBuildMode?: boolean) {
   if (!nodeModulesDictionary) throw new Error('You should install deps first');
   const currentEnv = process.env.NODE_ENV;
   process.env.NODE_ENV = 'development';
@@ -17,6 +17,7 @@ export async function buildHTML(configs: TConfigs) {
   const render = await server.ssrLoadModule(configs.input.html);
   const htmlComponent = render.default;
   const html = renderToStaticMarkup(createElement(htmlComponent, {
+    mode: isBuildMode ? 'build' : 'dev',
     bodyScripts: [
       {
         src: configs.input.web,

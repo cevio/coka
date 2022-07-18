@@ -5,7 +5,7 @@ import { buildHTML } from '../html';
 
 export async function createViteBuilder(mode: 'web' | 'client' | 'server') {
   const configs = loadConfigs();
-  if (mode === 'web') await buildHTML(configs);
+  if (mode === 'web') await buildHTML(configs, true);
   await build({
     define: {
       WINDOW_NAMESPACE: JSON.stringify(configs.namespace.window),
