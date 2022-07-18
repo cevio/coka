@@ -15,7 +15,7 @@ export default React.memo((props: React.PropsWithChildren<{ x: number }>) => {
   //   }, 3000);
   // }), { revalidate: 4 });
   // console.log('get', 2, data2)
-  const data = useSuspense('t1', () => new Promise<string[]>(resolve => {
+  const [data] = useSuspense('t1', () => new Promise<string[]>(resolve => {
     setTimeout(() => {
       console.log('get', 1)
       resolve([

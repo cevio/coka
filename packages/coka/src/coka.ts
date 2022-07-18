@@ -123,17 +123,17 @@ export function createServer<T extends TCokaMode>(cokaMode?: interfaces.Newable<
    * @param props 
    * @returns 
    */
-  const Client = (props: PropsWithChildren<{ state?: Record<string, any> }>) => {
+  const Client = (props: PropsWithChildren<{ state?: Record<string, { data: any, error?: string }> }>) => {
     if (props.state) {
       const value = props.state;
       for (const i in value) {
         if (!CokaServerProviderContext.has(i)) {
           CokaServerProviderContext.set(i, {
             isValidating: false,
-            data: value[i],
+            data: value[i].data,
             promise: null,
             fn: null,
-            error: null,
+            error: value[i].error,
           })
         }
       }

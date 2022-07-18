@@ -9,7 +9,7 @@ import Mathic from './math';
 export default class DemoExample extends Component implements Widget<TRequest> {
   @suspensable(<span style={{ color: 'red' }}>loading</span>)
   public render(props: TRequest) {
-    const data = useSuspense('t3', () => {
+    const [data] = useSuspense('t3', () => {
       return new Promise<string[]>(resolve => {
         setTimeout(() => {
           console.log('get', 3)

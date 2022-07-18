@@ -15,9 +15,9 @@ export interface TCokaServerProviderState<T = any> {
 export interface TUseData<T = any> {
   isValidating: boolean,
   data: T,
-  error: Error,
+  error: string,
   promise: Promise<T>,
-  fn?: () => [T, Error]
+  fn?: () => [T, string?]
 }
 
 export type TCokaRuntimeMode = 'browser' | 'client' | 'server';

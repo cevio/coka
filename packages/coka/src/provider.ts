@@ -4,9 +4,12 @@ import { TUseData } from './types';
 
 export class CokaServerContext extends Map<string, TUseData> {
   public toJSON() {
-    const res: Record<string, TUseData> = {};
+    const res: Record<string, { data: any, error?: string }> = {};
     for (const [key, value] of this) {
-      res[key] = value.data;
+      res[key] = {
+        data: value.data,
+        error: value.error,
+      };
     }
     return res;
   }
@@ -15,7 +18,7 @@ export class CokaServerContext extends Map<string, TUseData> {
 export const CokaServerProviderContext = new CokaServerContext();
 export const CokaServerProvider = createContext(CokaServerProviderContext);
 
-export function useSuspense<T = any>(key: string, fetcher: () => Promise<T>): [T, any] {
+export function useSuspense<T = any>(key: string, fetcher: () => Promise<T>): [T, string?] {
   const ctx = useContext(CokaServerProvider);
   const mode = useContext(RuntimeModeContext);
   const mutate = () => {
@@ -29,12 +32,12 @@ export function useSuspense<T = any>(key: string, fetcher: () => Promise<T>): [T
       },
       (err) => {
         target.isValidating = false;
-        target.error = err;
+        target.error = err.message;
         return Promise.reject(err);
       }
     );
   }
-  const createFetcher: () => () => [T, Error] = () => () => {
+  const createFetcher: () => () => [T, string?] = () => () => {
     const target: TUseData<T> = ctx.get(key);
     const { data, isValidating, promise, error } = target;
     if (error && !isValidating) {
