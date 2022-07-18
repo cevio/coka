@@ -133,6 +133,7 @@ export function createServer<T extends TCokaMode>(cokaMode?: interfaces.Newable<
             data: value[i],
             promise: null,
             fn: null,
+            error: null,
           })
         }
       }

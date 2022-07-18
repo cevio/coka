@@ -15,7 +15,7 @@ export class CokaServerContext extends Map<string, TUseData> {
 export const CokaServerProviderContext = new CokaServerContext();
 export const CokaServerProvider = createContext(CokaServerProviderContext);
 
-export function useSuspense<T = any>(key: string, fetcher: () => Promise<T>): T {
+export function useSuspense<T = any>(key: string, fetcher: () => Promise<T>): [T, any] {
   const ctx = useContext(CokaServerProvider);
   const mode = useContext(RuntimeModeContext);
   const mutate = () => {
@@ -29,15 +29,19 @@ export function useSuspense<T = any>(key: string, fetcher: () => Promise<T>): T 
       },
       (err) => {
         target.isValidating = false;
+        target.error = err;
         return Promise.reject(err);
       }
     );
   }
-  const createFetcher = () => () => {
+  const createFetcher: () => () => [T, Error] = () => () => {
     const target: TUseData<T> = ctx.get(key);
-    const { data, isValidating, promise } = target;
+    const { data, isValidating, promise, error } = target;
+    if (error && !isValidating) {
+      return [undefined, error];
+    }
     if (data !== undefined && !isValidating) {
-      return data;
+      return [data, undefined];
     }
     if (!promise) {
       target.promise = mutate();
@@ -49,6 +53,7 @@ export function useSuspense<T = any>(key: string, fetcher: () => Promise<T>): T 
     ctx.set(key, {
       data: undefined,
       promise: null,
+      error: null,
       isValidating: false,
       fn: createFetcher(),
     })
