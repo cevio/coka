@@ -15,6 +15,12 @@ async function createServer() {
   const vite = await createViteServer({
     server: { 
       middlewareMode: 'ssr',
+      proxy: {
+        '/micro': {
+          changeOrigin: true,
+          target: 'http://api.baizhun.cn'
+        }
+      }
     }
   })
   // vite.config.plugins.push()

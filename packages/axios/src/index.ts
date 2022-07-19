@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import { useSuspense } from '@coka/coka';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAsyncCallback } from 'react-async-hook';
 
 interface TAxiosRequestConfig<P = any> extends AxiosRequestConfig<P> {
@@ -37,18 +37,23 @@ export function createUseAxiosInstance(configs?: AxiosRequestConfig) {
       ...target,
       error: target.error?.message,
       data: target.result,
+      fetched: true,
     }
   }
 
   const useRequest = <R = any, P = any>(options: TAxiosRequestConfig<P>) => {
-    const [initState, _error] = useSuspensable(options.id, options);
+    const [initState, _error] = useSuspensable<R, P>(options.id, options);
     const [state, setState] = useState(initState);
     const [error, setError] = useState(_error);
     const [fetched, setFetched] = useState(false);
     const target = createRequestCallback<R, P>(options);
+    const execute = useCallback(() => {
+      if (fetched) return target.execute();
+      return Promise.resolve(state);
+    }, [target.execute, fetched, state]);
 
     useEffect(() => {
-      if (fetched) setState(target.result);
+      if (fetched && target.result !== undefined) setState(target.result);
       setFetched(true);
     }, [target.result]);
 
@@ -60,6 +65,8 @@ export function createUseAxiosInstance(configs?: AxiosRequestConfig) {
     return {
       ...target,
       error,
+      fetched,
+      execute,
       data: state,
     }
   }

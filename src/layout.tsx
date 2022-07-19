@@ -4,7 +4,7 @@ export const Layout = React.memo((props: React.PropsWithChildren<{}>) => {
   console.log('in layout')
   return <section>
     <header>
-    <img src="https://cn.vitejs.dev/logo.svg" />
+    <img src="https://cn.vitejs.dev/logo.svg" width={16} />
           <span>百准数据组件</span>
     </header>
     <article>{props.children}</article>

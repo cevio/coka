@@ -7,6 +7,14 @@ export default defineConfig({
   resolve: {
     alias: {
       "@coka/coka": "/packages/coka/src/index.ts"
+    },
+  },
+  server: {
+    proxy: {
+      '/micro': {
+        changeOrigin: true,
+        target: 'http://api.baizhun.cn'
+      }
     }
   }
 })
