@@ -1,0 +1,31 @@
+{
+  "name": "@coka/axios",
+  "version": "1.0.0",
+  "description": "react web framework:axios",
+  "author": "shenyunjie ",
+  "homepage": "https://github.com/cevio/drake/tree/master/packages/axios",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "keywords": [
+    "npm"
+  ],
+  "directories": {
+    "lib": "src"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rm -rf ./dist && tsc"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@coka/coka": "^2.1.9",
+    "@types/react": "^18.0.15",
+    "axios": "^0.27.2",
+    "react": "^18.2.0",
+    "react-async-hook": "^4.0.0"
+  }
+}
