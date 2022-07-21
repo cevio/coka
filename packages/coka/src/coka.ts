@@ -66,7 +66,7 @@ export function createServer<T extends TCokaMode>(cokaMode?: interfaces.Newable<
   }
 
   const encodePrefix = (url: string) => {
-    return prefix + url.startsWith('/') ? url.substring(1) : url;
+    return prefix + (url.startsWith('/') ? url.substring(1) : url);
   }
 
   /**
