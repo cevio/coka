@@ -44,6 +44,7 @@ export const replace = (url: string) => e.emit('replace', url);
 
 export function createServer<T extends TCokaMode>(cokaMode?: interfaces.Newable<T>) {
   const mode = cokaMode ? new cokaMode() : null;
+  let prefix: string = null;
   const router = new Router({
     maxParamLength: +Infinity,
     caseSensitive: true,
@@ -52,6 +53,24 @@ export function createServer<T extends TCokaMode>(cokaMode?: interfaces.Newable<
 
   const matchable = (url: string) => {
     return !!router.find(url);
+  }
+
+  const setUrlPrefix = (str: string) => {
+    prefix = str;
+  }
+
+  const decodePrefix = (url: string) => {
+    if (!prefix) return url;
+    if (url.startsWith(prefix)) {
+      return url.substring(prefix.length);
+    }
+    return url;
+  }
+
+  const encodePrefix = (url: string) => {
+    if (!prefix) return url;
+    if (url.startsWith(prefix)) return url;
+    return prefix + url;
   }
 
   /**
@@ -68,7 +87,7 @@ export function createServer<T extends TCokaMode>(cokaMode?: interfaces.Newable<
       const matched = router.find(url.pathname);
       const state: TRequest = {
         hash: url.hash,
-        pathname: url.pathname,
+        pathname: decodePrefix(url.pathname),
         query: query,
         params: matched ? matched.params : {},
         hostname: url.hostname,
@@ -178,8 +197,8 @@ export function createServer<T extends TCokaMode>(cokaMode?: interfaces.Newable<
   }
 
   if (mode) {
-    e.on('redirect', (url: string, title: string = window.document.title) => mode.redirect(url, title, () => e.emit('change')));
-    e.on('replace', (url: string, title: string = window.document.title) => mode?.replace(url, title, () => e.emit('change')));
+    e.on('redirect', (url: string, title: string = window.document.title) => mode.redirect(encodePrefix(url), title, () => e.emit('change')));
+    e.on('replace', (url: string, title: string = window.document.title) => mode?.replace(encodePrefix(url), title, () => e.emit('change')));
   }
 
   return {
@@ -190,5 +209,6 @@ export function createServer<T extends TCokaMode>(cokaMode?: interfaces.Newable<
     Application,
     createPathRule,
     createService,
+    setUrlPrefix,
   }
 }
