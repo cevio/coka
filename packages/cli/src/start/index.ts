@@ -4,6 +4,7 @@ import { loadConfigs } from '../config';
 import { existsSync } from 'fs';
 import { resolve } from 'path';
 import { createProxyMiddleware } from 'http-proxy-middleware';
+import { getProdAssets } from '../assets';
 
 export default async function createStarter(_port: string) {
   const configs = loadConfigs();
@@ -14,6 +15,16 @@ export default async function createStarter(_port: string) {
   
   const serverEntry = require(serverEntryFile);
   const app = express();
+
+  const getAssets = () => {
+    const pkgFile = resolve(cwd, 'package.json');
+    if (!existsSync(pkgFile)) return getProdAssets();
+    const pkg = require(pkgFile);
+    if (!pkg.assets) return getProdAssets();
+    return pkg.assets as ReturnType<typeof getProdAssets>;
+  }
+
+  const assets = getAssets();
   
   app.use(serveStatic(configs.output.client));
   
@@ -22,7 +33,11 @@ export default async function createStarter(_port: string) {
     app.use(i, createProxyMiddleware(proxies[i]));
   }
 
-  app.get('*', (req, res, next) => serverEntry.default(req, res, next));
+  app.get('*', (req, res, next) => serverEntry.default({
+    assets,
+    req, res, next,
+    namespace: configs.namespace.window,
+  }));
 
   app.listen(port, (err?: Error) => {
     if (err) return console.error(err);

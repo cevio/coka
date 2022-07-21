@@ -1,7 +1,10 @@
-import { build, PluginOption, UserConfig, Plugin, createServer } from 'vite';
+import { build, PluginOption, UserConfig, Plugin } from 'vite';
 import { loadConfigs } from '../config';
 import { TConfigs } from '../types';
 import { buildHTML } from '../html';
+import { getProdAssets } from '../assets';
+import { resolve } from 'path';
+import { existsSync, writeFileSync } from 'fs';
 
 export async function createViteBuilder(mode: 'web' | 'client' | 'server') {
   const configs = loadConfigs();
@@ -14,6 +17,15 @@ export async function createViteBuilder(mode: 'web' | 'client' | 'server') {
       createViteBuilderPlugin(mode, configs),
     ]
   })
+  if (mode === 'client') {
+    const pkgfile = resolve(process.cwd(), 'package.json');
+    if (existsSync(pkgfile)) {
+      const pkg = require(pkgfile);
+      const assets = getProdAssets();
+      pkg.assets = assets;
+      writeFileSync(pkgfile, JSON.stringify(pkg, null, 2), 'utf8');
+    }
+  }
 }
 
 function createViteBuilderPlugin(mode: 'web' | 'client' | 'server', configs: TConfigs) {

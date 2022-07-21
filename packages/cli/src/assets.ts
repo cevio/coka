@@ -1,11 +1,23 @@
-import type { THeaderScript } from '.';
-import { loadConfigs } from '@coka/cli';
+import { loadConfigs } from './config';
 import { resolve } from 'path';
 import { existsSync } from 'fs';
 
+export interface THeaderScript {
+  type?: string,
+  crossOrigin?: 'anonymous' | 'use-credentials',
+  src: string,
+}
+
+export interface TAssets {
+  headerScripts?: (string | THeaderScript)[],
+  headerPreloadScripts?: string[],
+  headerCsses?: string[],
+  bodyScripts?: (string | THeaderScript)[],
+}
+
 const configs = loadConfigs();
 
-export function getDevAssets(): { headerScripts: THeaderScript[] } {
+export function getDevAssets(): TAssets {
   return {
     headerScripts: [
       {
@@ -16,7 +28,7 @@ export function getDevAssets(): { headerScripts: THeaderScript[] } {
   }
 }
 
-export function getProdAssets() {
+export function getProdAssets(): TAssets {
   const headerScripts: THeaderScript[] = [];
   const headerPreloadScripts: string[] = [];
   const headerCsses: string[] = [];

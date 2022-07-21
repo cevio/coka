@@ -2,8 +2,7 @@ import { createServer, PluginOption, ViteDevServer } from 'vite';
 import { loadConfigs } from '../config';
 import { buildHTML, cleanHTML } from '../html';
 import { TConfigs } from '../types';
-import { resolve } from 'path';
-import { existsSync } from 'fs';
+import { getDevAssets } from '../assets';
 
 export async function createViteDevServer(mode: 'web' | 'ssr') {
   process.env.NODE_ENV = 'development';
@@ -46,7 +45,11 @@ export function createViteDevServerPlugin(configs: TConfigs): PluginOption {
         try {
           const renderer = await server.ssrLoadModule(configs.input.server);
           if (typeof renderer.default !== 'function') return next();
-          renderer.default(req, res, next);
+          renderer.default({
+            assets: getDevAssets(),
+            req, res, next,
+            namespace: configs.namespace.window,
+          });
         } catch(e) {
           server.ssrFixStacktrace(e);
           res.statusCode = 500;
