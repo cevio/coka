@@ -7,7 +7,7 @@ import { getDevAssets } from '../assets';
 export async function createViteDevServer(mode: 'web' | 'ssr') {
   process.env.NODE_ENV = 'development';
   const configs = loadConfigs();
-  if (mode === 'web') await buildHTML(configs);
+  if (mode === 'web') await buildHTML(configs, true);
   const plugins: PluginOption[] = [];
   if (mode === 'ssr') {
     cleanHTML();
@@ -49,6 +49,7 @@ export function createViteDevServerPlugin(configs: TConfigs): PluginOption {
             assets: getDevAssets(),
             req, res, next,
             namespace: configs.namespace.window,
+            dev: true,
           });
         } catch(e) {
           server.ssrFixStacktrace(e);

@@ -2,10 +2,10 @@ import React, { createElement } from 'react';
 import { IncomingMessage, ServerResponse } from 'http';
 import { createServer, CokaServerProvider, CokaServerContext } from '@coka/coka';
 import { renderToPipeableStream, RenderToPipeableStreamOptions } from 'react-dom/server';
-import { TAssets } from '@coka/cli';
+import { TAssets, THTML } from '@coka/cli';
 
 export default (
-  htmlComponent: React.FunctionComponent<React.PropsWithChildren<TAssets>>, 
+  htmlComponent: THTML, 
   notFoundComponent: React.FunctionComponent, 
   routerCallback: (app: ReturnType<typeof createServer>) => void
 ) => {
@@ -17,6 +17,7 @@ export default (
     res: ServerResponse, 
     next: Function,
     namespace: string,
+    dev?: boolean,
   }) => {
     const { assets, req, res, next, namespace } = opts;
     const application = createServer();
@@ -53,7 +54,7 @@ export default (
        */
       const app = createElement(Application, { href: url, headers: req.headers }, createElement(NotFound));
       const provider = createElement(CokaServerProvider.Provider, { value: context }, app);
-      const root = createElement(Html, assets, provider);
+      const root = createElement(Html, { assets, dev: opts.dev }, provider);
       const stream = renderToPipeableStream(root, configs);
     });
   }
