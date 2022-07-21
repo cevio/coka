@@ -8,7 +8,7 @@ import { existsSync, writeFileSync } from 'fs';
 
 export async function createViteBuilder(mode: 'web' | 'client' | 'server') {
   const configs = loadConfigs();
-  if (mode === 'web') await buildHTML(configs, true);
+  if (mode === 'web') await buildHTML(configs);
   await build({
     define: {
       WINDOW_NAMESPACE: JSON.stringify(configs.namespace.window),
