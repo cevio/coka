@@ -44,7 +44,7 @@ export const replace = (url: string) => e.emit('replace', url);
 
 export function createServer<T extends TCokaMode>(cokaMode?: interfaces.Newable<T>) {
   const mode = cokaMode ? new cokaMode() : null;
-  let prefix: string = null;
+  let prefix: string = '/';
   const router = new Router({
     maxParamLength: +Infinity,
     caseSensitive: true,
@@ -56,21 +56,17 @@ export function createServer<T extends TCokaMode>(cokaMode?: interfaces.Newable<
   }
 
   const setUrlPrefix = (str: string) => {
+    if (!str || !str.endsWith('/')) throw new Error('prefix must end with `/`');
     prefix = str;
   }
 
   const decodePrefix = (url: string) => {
-    if (!prefix) return url;
-    if (url.startsWith(prefix)) {
-      return url.substring(prefix.length);
-    }
-    return url;
+    url = url.startsWith(prefix) ? url.substring(prefix.length) : url;
+    return !url.startsWith('/') ? '/' + url : url;
   }
 
   const encodePrefix = (url: string) => {
-    if (!prefix) return url;
-    if (url.startsWith(prefix)) return url;
-    return prefix + url;
+    return prefix + url.startsWith('/') ? url.substring(1) : url;
   }
 
   /**
@@ -83,11 +79,12 @@ export function createServer<T extends TCokaMode>(cokaMode?: interfaces.Newable<
     const object = useMemo(() => {
       const url = new URL(props.href);
       const query: Record<string, string> = {};
-      for (const [key, value] of url.searchParams.entries()) query[key] = value
-      const matched = router.find(url.pathname);
+      for (const [key, value] of url.searchParams.entries()) query[key] = value;
+      const pathname = decodePrefix(url.pathname);
+      const matched = router.find(pathname);
       const state: TRequest = {
         hash: url.hash,
-        pathname: decodePrefix(url.pathname),
+        pathname,
         query: query,
         params: matched ? matched.params : {},
         hostname: url.hostname,
