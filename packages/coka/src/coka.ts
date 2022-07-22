@@ -52,7 +52,8 @@ export function createServer<T extends TCokaMode>(cokaMode?: interfaces.Newable<
   })
 
   const matchable = (url: string) => {
-    return !!router.find(decodePrefix(url));
+    const locate = new URL(url);
+    return !!router.find(decodePrefix(locate.pathname));
   }
 
   const setUrlPrefix = (str: string) => {
