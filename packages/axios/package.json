@@ -1,6 +1,6 @@
 {
   "name": "@coka/axios",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "react web framework:axios",
   "author": "shenyunjie ",
   "homepage": "https://github.com/cevio/drake/tree/master/packages/axios",
@@ -22,7 +22,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@coka/coka": "^2.1.13",
+    "@coka/coka": "^2.1.14",
     "@types/react": "^18.0.15",
     "axios": "^0.27.2",
     "react": "^18.2.0",
