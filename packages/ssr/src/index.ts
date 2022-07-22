@@ -29,7 +29,7 @@ export default (
     const _url = originalUrl || req.url;
     const url = 'http://' + host + _url;
     routerCallback && routerCallback(application);
-    if (!application.matchable(_url)) return await Promise.resolve(next());
+    if (!application.matchable(url)) return await Promise.resolve(next());
     await new Promise<void>((resolve, reject) => {
       const configs: RenderToPipeableStreamOptions = {
         onShellReady() {
