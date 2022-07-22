@@ -15,7 +15,7 @@ export interface TCokaServerProviderState<T = any> {
 export interface TUseData<T = any> {
   isValidating: boolean,
   data: T,
-  error: string,
+  error: any,
   promise: Promise<T>,
   fn?: () => [T, string?]
 }

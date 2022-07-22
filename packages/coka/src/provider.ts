@@ -18,7 +18,7 @@ export class CokaServerContext extends Map<string, TUseData> {
 export const CokaServerProviderContext = new CokaServerContext();
 export const CokaServerProvider = createContext(CokaServerProviderContext);
 
-export function useSuspense<T = any>(key: string, fetcher: () => Promise<T>): [T, string?] {
+export function useSuspense<T = any>(key: string, fetcher: () => Promise<T>): [T, any?] {
   const ctx = useContext(CokaServerProvider);
   const mode = useContext(RuntimeModeContext);
   const mutate = () => {
