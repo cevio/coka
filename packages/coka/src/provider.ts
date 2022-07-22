@@ -32,7 +32,7 @@ export function useSuspense<T = any>(key: string, fetcher: () => Promise<T>): [T
       },
       (err) => {
         target.isValidating = false;
-        target.error = err.message;
+        target.error = err;
         return Promise.reject(err);
       }
     );

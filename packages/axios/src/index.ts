@@ -35,7 +35,7 @@ export function createUseAxiosInstance(configs?: AxiosRequestConfig) {
     const target = createRequestCallback<R, P>(options);
     return {
       ...target,
-      error: target.error?.message,
+      error: target.error as any,
       data: target.result,
       fetched: true,
     }
